@@ -13,17 +13,17 @@ import lombok.*;
 public class Resident extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ResidentId")  // Matches database schema
+    @Column(name = "ResidentId")
     private int residentId;
 
     @Column(name = "RewardPoints")
     private int rewardPoints = 0;
 
     @OneToOne
-    @JoinColumn(name = "UserId", nullable = false, foreignKey = @ForeignKey(name = "FK_Resident_User"))
+    @JoinColumn(name = "UserId", nullable = false, referencedColumnName = "userId")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ApartmentId", referencedColumnName = "ApartmentId")
     private Apartment apartment;
 }

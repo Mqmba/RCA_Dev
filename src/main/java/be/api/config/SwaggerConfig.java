@@ -18,9 +18,7 @@ public class SwaggerConfig {
 
         List<Server> servers = new ArrayList<>();
         final String securitySchemeName = "bearerAuth";
-
         servers.add(new Server().url("http://localhost:8080"));
-        servers.add(new Server().url("https://rcaapi-gagmh3e5dgc9dffg.southeastasia-01.azurewebsites.net"));
 
         return new OpenAPI()
                 .servers(servers)
