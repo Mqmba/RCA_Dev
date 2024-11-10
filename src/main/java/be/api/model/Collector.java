@@ -32,6 +32,9 @@ public class Collector extends AbstractEntity {
     @Column(name = "IsWorking")
     private Boolean isWorking;
 
+    @Column(name = "balance")
+    private Double balance;
+
     @OneToOne
     @JoinColumn(name = "UserId", nullable = false, foreignKey = @ForeignKey(name = "FK_Collector_User"))
     private User user;
