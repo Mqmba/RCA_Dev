@@ -122,8 +122,8 @@ public class AuthService {
                     residentDto.getLastName(),
                     residentDto.getPhoneNumber(),
                     User.UserRole.ROLE_RESIDENT
-
             );
+
             Resident resident = Resident.builder()
                     .user(user)
                     .rewardPoints(0)
@@ -133,7 +133,6 @@ public class AuthService {
             residentRepository.save(resident);
 
             return mapToUserResponseDTO(user);
-
         } catch (Exception e) {
             logger.error("Error registering resident: {}", e.getMessage());
             throw e;
