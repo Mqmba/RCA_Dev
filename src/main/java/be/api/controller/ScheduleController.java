@@ -6,42 +6,48 @@ import be.api.model.Schedule;
 import be.api.services.impl.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/schedule")
 @RequiredArgsConstructor
-@Slf4j
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    @GetMapping("/get-schedule")
-    public ResponseData<List<Schedule>> getSchedules() {
-        try {
-            log.info("Retrieving all schedules");
-            List<Schedule> schedules = scheduleService.getSchedules();
-            return new ResponseData<>(200, "Successfully retrieved schedules", schedules);
-        } catch (Exception e) {
-            log.error("Error retrieving schedules", e);
-            return new ResponseData<>(500, "Internal server error while retrieving schedules", null);
-        }
+    @GetMapping("/get-list-collection-schedule-by-paging")
+    public ResponseEntity<Page<Schedule>> getAllSchedules(Pageable pageable) {
+        return ResponseEntity.ok(scheduleService.getAllSchedules(pageable));
     }
 
-    @PostMapping("/create-schedule")
-    public ResponseData<Schedule> createSchedule(@RequestBody ScheduleDTO schedule) {
-        try {
-            log.info("Creating a new schedule");
-            Schedule createdSchedule = scheduleService.addSchedule(schedule);
-            return new ResponseData<>(200, "Schedule created successfully", createdSchedule);
-        } catch (Exception e) {
-            log.error("Error creating schedule", e);
-            return new ResponseData<>(500, e.getMessage(), null);
-        }
+    @GetMapping("/get-list-active-collection-schedule-by-paging")
+    public ResponseEntity<Page<Schedule>> getActiveSchedules(Pageable pageable) {
+        return ResponseEntity.ok(scheduleService.getActiveSchedules(pageable));
+    }
+
+    @PostMapping("/create-collection-schedule")
+    public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
+        return ResponseEntity.ok(scheduleService.createSchedule(schedule));
+    }
+
+    @PutMapping("/update-collection-schedule")
+    public ResponseEntity<Schedule> updateSchedule(@RequestParam Integer id, @RequestBody Schedule schedule) {
+        return ResponseEntity.ok(scheduleService.updateSchedule(id, schedule));
+    }
+
+    @PutMapping("/change-schedule-status-by-id")
+    public ResponseEntity<Schedule> changeScheduleStatus(@RequestParam Integer id,
+                                                         @RequestParam String status,
+                                                         @RequestParam Integer depotId) {
+        return ResponseEntity.ok(scheduleService.changeScheduleStatus(id, status, depotId));
+    }
+
+    @GetMapping("/get-list-collection-schedule-by-user")
+    public ResponseEntity<Page<Schedule>> getUserSchedules(@RequestParam Integer userId, Pageable pageable) {
+        return ResponseEntity.ok(scheduleService.getUserSchedules(userId, pageable));
     }
 }
