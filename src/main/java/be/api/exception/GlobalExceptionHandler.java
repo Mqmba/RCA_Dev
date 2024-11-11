@@ -15,6 +15,7 @@ import java.util.Map;
 // Xử lý exception toàn cục
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler({MethodArgumentNotValidException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(Exception ex, WebRequest request) {
