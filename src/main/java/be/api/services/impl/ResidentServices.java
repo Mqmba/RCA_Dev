@@ -1,5 +1,6 @@
 package be.api.services.impl;
 
+import be.api.config.SecurityConfig;
 import be.api.dto.request.ResidentRegistrationDTO;
 import be.api.model.Apartment;
 import be.api.model.Resident;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,14 +36,15 @@ public class ResidentServices implements IResidentServices {
         try {
             // Create and populate the User entity from residentData
             User user = new User();
-            user.setUsername(residentData.getEmail()); // Set username from email or a separate field
+            user.setUsername(residentData.getUsername()); // Set username from email or a separate field
             user.setEmail(residentData.getEmail());
-            user.setPassword(residentData.getPassword());
+            user.setPassword(new BCryptPasswordEncoder().encode(residentData.getPassword()));
             user.setPhoneNumber(residentData.getPhoneNumber());
             user.setRole(User.UserRole.ROLE_RESIDENT);
             user.setFirstName(residentData.getFirstName());
             user.setLastName(residentData.getLastName());
             user.setIsActive(true);
+            user.setEmailConfirmed(true);
 
             // Save the User to the database
             user = userRepository.save(user);
