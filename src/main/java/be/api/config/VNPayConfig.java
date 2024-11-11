@@ -11,10 +11,23 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class VNPayConfig {
+    // Merchant Admin :
+    // nguyenhoanghuy9a5@gmail.com
+    // Huynguyen005
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
-    public static String vnp_TmnCode = "";
-    public static String secretKey = "";
+    public static String vnp_TmnCode = "TX8R1KM3";
+    public static String secretKey = "TCWEWFFGW6ZMETTBMXIHUCQPVE72AI0U";
+    // Secret key :
+    // KD503J7KU4FL0HLQNW0S7MXYW9SPBP3A
+    // ET4THWZ6DWZ9T58OZ0M7CD3DR14ZIT57
+    // 6FLWXMQZVBZWT99ZB70391EZSY17VLDK
+
+    public static String vnp_Command = "pay";
+    // public static String vnp_BankCode = "NCB";
+    public static String vnp_Version = "2.1.0";
+    public static String vnp_CurrCode = "VND";
+    public static String vnp_Locale = "vn";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     public static String md5(String message) {
