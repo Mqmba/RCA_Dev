@@ -24,4 +24,5 @@ public class Apartment extends AbstractEntity {
 
     @Column(name = "Description")
     private String description;
+
 }

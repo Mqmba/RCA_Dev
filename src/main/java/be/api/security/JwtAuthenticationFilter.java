@@ -72,11 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 // Check access for other requests
-                if (!hasAccess(userDetails, requestUri)) {
-                    logger.warn("JWT Authentication Filter: Access denied for user: {} to URI: {}", username, requestUri);
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-                    return; // Stop further processing if access is denied
-                }
+
 
             }
             else {
@@ -88,38 +84,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private boolean hasAccess(UserDetails userDetails, String requestUri) {
-        // Log user roles
-        logger.info("Checking access for user: {} with roles: {}", userDetails.getUsername(), userDetails.getAuthorities());
-
-        // Check if the user has specific roles
-        boolean isAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
-        boolean isCollector = userDetails.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_COLLECTOR"));
-        boolean isResident = userDetails.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_RESIDENT"));
-        boolean isRecyclingDepot = userDetails.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_RECYCLING_DEPOT"));
-
-        // Log role checks
-        logger.info("Roles: Admin: {}, Collector: {}, Resident: {}", isAdmin, isCollector, isResident);
-
-
-        // Define access logic based on roles and requested URI
-        if (isAdmin) {
-            return true; // Admin has access to everything
-        } else if (isCollector && requestUri.startsWith("/collector")) {
-            return true; // Collector has access to collector-related URIs
-        } else if (isResident && requestUri.startsWith("/resident")) {
-            return true; // Resident has access to resident-related URIs
-        } else if (isRecyclingDepot && requestUri.startsWith("/recycling_depot")) {
-            return true; // Resident has access to resident-related URIs
-        }
-
-        return requestUri.startsWith("/public"); // Public URIs are accessible to everyone
     }
 }
 
