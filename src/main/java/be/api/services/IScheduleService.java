@@ -10,7 +10,7 @@ import java.util.List;
 public interface IScheduleService {
     Page<Schedule> getAllSchedules(Pageable pageable);
     Page<Schedule> getActiveSchedules(Pageable pageable);
-    Schedule createSchedule(Schedule schedule);
+    Schedule createSchedule(ScheduleDTO scheduleDTO);
     Schedule updateSchedule(Integer id, Schedule schedule);
     Schedule changeScheduleStatus(Integer id, String status, Integer depotId);
     Page<Schedule> getUserSchedules(Integer userId, Pageable pageable);

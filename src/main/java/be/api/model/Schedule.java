@@ -22,17 +22,11 @@ public class Schedule extends AbstractEntity {
     @Column(name = "ScheduleDate")
     private Date scheduleDate;
 
-    @Column(name = "CreateAt")
-    private Date createdAt;
-
-    @Column(name = "UpdateAt")
-    private Date updatedAt;
-
     @Column(name = "MaterialType")
     private String materialType;
 
     @Column(name = "Status")
-    private String status;
+    private String status = "Pending";
 
     @ManyToOne
     @JoinColumn(name = "BuildingId", referencedColumnName = "buildingId")
