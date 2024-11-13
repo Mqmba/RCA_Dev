@@ -6,6 +6,7 @@ import be.api.repository.IBuildingRepository;
 import be.api.repository.ICollectorRepository;
 import be.api.repository.IRecyclingDepotRepository;
 import be.api.repository.IScheduleRepository;
+import be.api.repository.IResidentRepository;
 import be.api.services.IScheduleService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ScheduleService implements IScheduleService {
     private final IRecyclingDepotRepository recyclingDepotRepository;
     private final ICollectorRepository collectorRepository;
     private final IBuildingRepository buildingRepository;
+    private final IResidentRepository residentRepository;
     @Override
     public Page<Schedule> getAllSchedules(Pageable pageable) {
         return scheduleRepository.findAll(pageable);
@@ -45,9 +47,9 @@ public class ScheduleService implements IScheduleService {
             sch.setBuilding(buildingRepository.findById(scheduleDTO.buildingId())
                     .orElseThrow(() -> new RuntimeException("Building not found with ID: " + scheduleDTO.buildingId())));
         }
-        if (scheduleDTO.recyclingDepotId() != null) {
-            sch.setRecyclingDepot(recyclingDepotRepository.findById(scheduleDTO.recyclingDepotId())
-                    .orElseThrow(() -> new RuntimeException("Recycling depot not found with ID: " + scheduleDTO.recyclingDepotId())));
+        if (scheduleDTO.residentId() != null) {
+            sch.setResident(residentRepository.findById(scheduleDTO.residentId())
+                    .orElseThrow(() -> new RuntimeException("Resident not found with ID: " + scheduleDTO.residentId())));
         }
         return scheduleRepository.save(sch);
     }

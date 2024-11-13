@@ -39,4 +39,8 @@ public class Schedule extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "CollectorId", referencedColumnName = "CollectorId")
     private Collector collector;
+
+    @OneToOne
+    @JoinColumn(name = "ResidentId", referencedColumnName = "ResidentId")
+    private Resident resident;
 }
