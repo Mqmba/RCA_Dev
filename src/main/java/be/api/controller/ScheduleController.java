@@ -30,8 +30,8 @@ public class ScheduleController {
     }
 
     @PostMapping("/create-collection-schedule")
-    public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
-        return ResponseEntity.ok(scheduleService.createSchedule(schedule));
+    public ResponseEntity<Schedule> createSchedule(@RequestBody ScheduleDTO scheduleDto) {
+        return ResponseEntity.ok(scheduleService.createSchedule(scheduleDto));
     }
 
     @PutMapping("/update-collection-schedule")

@@ -1,6 +1,8 @@
 package be.api.services.impl;
 
+import be.api.dto.request.ScheduleDTO;
 import be.api.model.Schedule;
+import be.api.repository.IBuildingRepository;
 import be.api.repository.ICollectorRepository;
 import be.api.repository.IRecyclingDepotRepository;
 import be.api.repository.IScheduleRepository;
@@ -22,6 +24,7 @@ public class ScheduleService implements IScheduleService {
     private final IScheduleRepository scheduleRepository;
     private final IRecyclingDepotRepository recyclingDepotRepository;
     private final ICollectorRepository collectorRepository;
+    private final IBuildingRepository buildingRepository;
     @Override
     public Page<Schedule> getAllSchedules(Pageable pageable) {
         return scheduleRepository.findAll(pageable);
@@ -33,8 +36,20 @@ public class ScheduleService implements IScheduleService {
     }
 
     @Override
-    public Schedule createSchedule(Schedule schedule) {
-        return scheduleRepository.save(schedule);
+    public Schedule createSchedule(ScheduleDTO scheduleDTO) {
+        Schedule sch = new Schedule();
+        sch.setMaterialType(scheduleDTO.materialType());
+        sch.setStatus("Pending");
+        sch.setScheduleDate(scheduleDTO.scheduleDate());
+        if (scheduleDTO.buildingId() != null) {
+            sch.setBuilding(buildingRepository.findById(scheduleDTO.buildingId())
+                    .orElseThrow(() -> new RuntimeException("Building not found with ID: " + scheduleDTO.buildingId())));
+        }
+        if (scheduleDTO.recyclingDepotId() != null) {
+            sch.setRecyclingDepot(recyclingDepotRepository.findById(scheduleDTO.recyclingDepotId())
+                    .orElseThrow(() -> new RuntimeException("Recycling depot not found with ID: " + scheduleDTO.recyclingDepotId())));
+        }
+        return scheduleRepository.save(sch);
     }
 
     @Override
