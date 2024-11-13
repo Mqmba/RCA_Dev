@@ -14,5 +14,5 @@ public record ScheduleDTO(
         Date scheduleDate,
         String materialType,
         Integer buildingId,
-        Integer recyclingDepotId
+        Integer residentId
 ) {}
