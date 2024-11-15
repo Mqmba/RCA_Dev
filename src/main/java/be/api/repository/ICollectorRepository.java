@@ -20,6 +20,6 @@ public interface ICollectorRepository extends JpaRepository<Collector, Integer> 
     void updateByCollectorId(int id, int amount);
 
     List<User> findByUserUserId(Integer userId);
-
+    List<Collector> findByCollectorId(Integer CollectorId);
 }
 

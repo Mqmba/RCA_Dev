@@ -13,4 +13,5 @@ import java.util.List;
 public interface IScheduleRepository extends JpaRepository<Schedule, Integer> {
     Page<Schedule> findByStatus(String status, Pageable pageable);
     Page<Schedule> findByCollector(Integer collectorId, Pageable pageable);
+    List<Schedule> findByCollectorAndStatusIn(Collector collectorId, List<Schedule.scheduleStatus> statuses);
 }
