@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ScheduleDTO {
-    private Date scheduleDate;
-}
+
+import java.util.Date;
+
+public record ScheduleDTO(
+        Date scheduleDate,
+        String materialType,
+        Integer buildingId,
+        Integer residentId
+) {}

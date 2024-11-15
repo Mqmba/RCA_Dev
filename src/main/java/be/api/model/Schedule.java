@@ -22,17 +22,19 @@ public class Schedule extends AbstractEntity {
     @Column(name = "ScheduleDate")
     private Date scheduleDate;
 
-    @Column(name = "CreateAt")
-    private Date createdAt;
-
-    @Column(name = "UpdateAt")
-    private Date updatedAt;
-
     @Column(name = "MaterialType")
     private String materialType;
 
+    public enum scheduleStatus {
+        PENDING,
+        ONGOING,
+        ACCEPTED,
+        FINISHED,
+    }
+
     @Column(name = "Status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private scheduleStatus status = scheduleStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "BuildingId", referencedColumnName = "buildingId")
@@ -45,4 +47,8 @@ public class Schedule extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "CollectorId", referencedColumnName = "CollectorId")
     private Collector collector;
+
+    @OneToOne
+    @JoinColumn(name = "ResidentId", referencedColumnName = "ResidentId")
+    private Resident resident;
 }

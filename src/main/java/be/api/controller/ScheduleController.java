@@ -30,8 +30,8 @@ public class ScheduleController {
     }
 
     @PostMapping("/create-collection-schedule")
-    public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
-        return ResponseEntity.ok(scheduleService.createSchedule(schedule));
+    public ResponseEntity<Schedule> createSchedule(@RequestBody ScheduleDTO scheduleDto) {
+        return ResponseEntity.ok(scheduleService.createSchedule(scheduleDto));
     }
 
     @PutMapping("/update-collection-schedule")
@@ -41,7 +41,7 @@ public class ScheduleController {
 
     @PutMapping("/change-schedule-status-by-id")
     public ResponseEntity<Schedule> changeScheduleStatus(@RequestParam Integer id,
-                                                         @RequestParam String status,
+                                                         @RequestParam Schedule.scheduleStatus status,
                                                          @RequestParam Integer depotId) {
         return ResponseEntity.ok(scheduleService.changeScheduleStatus(id, status, depotId));
     }
