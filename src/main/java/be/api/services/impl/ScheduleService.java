@@ -1,13 +1,12 @@
 package be.api.services.impl;
 
 import be.api.dto.request.ScheduleDTO;
+import be.api.model.Collector;
 import be.api.model.Schedule;
-import be.api.repository.IBuildingRepository;
-import be.api.repository.ICollectorRepository;
-import be.api.repository.IRecyclingDepotRepository;
-import be.api.repository.IScheduleRepository;
-import be.api.repository.IResidentRepository;
+import be.api.model.User;
+import be.api.repository.*;
 import be.api.services.IScheduleService;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,18 +14,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ScheduleService implements IScheduleService {
-
     private final IScheduleRepository scheduleRepository;
     private final IRecyclingDepotRepository recyclingDepotRepository;
     private final ICollectorRepository collectorRepository;
     private final IBuildingRepository buildingRepository;
     private final IResidentRepository residentRepository;
+    private final IUserRepository userRepository;
+
     @Override
     public Page<Schedule> getAllSchedules(Pageable pageable) {
         return scheduleRepository.findAll(pageable);
@@ -41,7 +42,7 @@ public class ScheduleService implements IScheduleService {
     public Schedule createSchedule(ScheduleDTO scheduleDTO) {
         Schedule sch = new Schedule();
         sch.setMaterialType(scheduleDTO.materialType());
-        sch.setStatus("Pending");
+        sch.setStatus(Schedule.scheduleStatus.PENDING);
         sch.setScheduleDate(scheduleDTO.scheduleDate());
         if (scheduleDTO.buildingId() != null) {
             sch.setBuilding(buildingRepository.findById(scheduleDTO.buildingId())
@@ -68,8 +69,9 @@ public class ScheduleService implements IScheduleService {
         return null;
     }
 
+
     @Override
-    public Schedule changeScheduleStatus(Integer id, String status, Integer depotId) {
+    public Schedule changeScheduleStatus(Integer id, Schedule.scheduleStatus status, Integer depotId) {
         Optional<Schedule> existingSchedule = scheduleRepository.findById(id);
         if (existingSchedule.isPresent()) {
             Schedule schedule = existingSchedule.get();
@@ -85,4 +87,28 @@ public class ScheduleService implements IScheduleService {
     public Page<Schedule> getUserSchedules(Integer userId, Pageable pageable) {
         return scheduleRepository.findByCollector(collectorRepository.findByUserUserId(userId).stream().findFirst().orElseThrow(() -> new EntityNotFoundException("User not found id: " + userId)).getUserId(), pageable);
     }
+
+    @Override
+    public List<Schedule> getUserSchedules(Integer userId, Schedule.scheduleStatus status) {
+        // Find the user associated with the userId and retrieve its collector
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        Collector collector = user.getCollector(); // Assuming User has a `Collector` association
+
+        // Fetch schedules for the specific status
+        return scheduleRepository.findByCollectorAndStatusIn(collector, List.of(status));
+    }
+
+    @Override
+    public List<Schedule> getUserSchedules(Integer userId) {
+        // Find the user associated with the userId and retrieve its collector
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        Collector collector = user.getCollector(); // Assuming User has a `Collector` association
+
+        // Fetch schedules for default statuses
+        return scheduleRepository.findByCollectorAndStatusIn(collector,
+                List.of(Schedule.scheduleStatus.ONGOING, Schedule.scheduleStatus.ACCEPTED));
+    }
+
 }

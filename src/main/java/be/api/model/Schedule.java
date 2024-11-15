@@ -25,8 +25,16 @@ public class Schedule extends AbstractEntity {
     @Column(name = "MaterialType")
     private String materialType;
 
+    public enum scheduleStatus {
+        PENDING,
+        ONGOING,
+        ACCEPTED,
+        FINISHED,
+    }
+
     @Column(name = "Status")
-    private String status = "Pending";
+    @Enumerated(EnumType.STRING)
+    private scheduleStatus status = scheduleStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "BuildingId", referencedColumnName = "buildingId")

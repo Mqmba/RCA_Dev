@@ -1,9 +1,14 @@
 package be.api.controller;
 
 import be.api.dto.response.ResponseData;
+import be.api.model.Schedule;
+import be.api.security.anotation.CollectorOnly;
 import be.api.services.impl.CollectorServices;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/collector")
@@ -28,5 +33,17 @@ public class CollectorController {
         }catch (Exception e) {
             return new ResponseData<>(500, "Internal server error while updating collector status with message: " + e.getMessage(), null);
         }
+    }
+
+    @PutMapping("/accept-colecttion-schedule-by-id")
+    @CollectorOnly
+    ResponseEntity<Schedule> acceptCollector(@RequestParam Integer scheduleId) {
+        return ResponseEntity.ok(collectorServices.acceptCollectSchedule(scheduleId));
+    }
+
+    @GetMapping("/get-list-collection-schedule-by-status")
+    @CollectorOnly
+    ResponseEntity<List<Schedule>> getCollectionSchedule(@RequestParam Schedule.scheduleStatus status) {
+        return ResponseEntity.ok(collectorServices.getSchedulesByStatus(status));
     }
 }
