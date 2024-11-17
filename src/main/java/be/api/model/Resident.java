@@ -1,5 +1,6 @@
 package be.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +24,7 @@ public class Resident extends AbstractEntity {
     @JoinColumn(name = "UserId", nullable = false, referencedColumnName = "userId")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ApartmentId", referencedColumnName = "ApartmentId")
+    @OneToOne
+    @JoinColumn(name = "ApartmentId", nullable = false, referencedColumnName = "ApartmentId")
     private Apartment apartment;
 }

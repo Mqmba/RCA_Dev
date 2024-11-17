@@ -11,8 +11,12 @@ public interface IApartmentRepository extends JpaRepository<Apartment, Integer> 
 
     @Modifying
     @Transactional
-    @Query("UPDATE Apartment a SET a.name = :name, a.description = :description WHERE a.apartmentId = :apartmentId")
-    Apartment updateApartmentById(@Param("apartmentId") Integer apartmentId,
-                            @Param("name") String name,
-                            @Param("description") String description);
+    @Query("UPDATE Apartment a SET a.apartmentNumber = :apartmentNumber, a.floor = :floor, a.residentCode = :residentCode, a.phoneNumber = :phoneNumber WHERE a.apartmentId = :apartmentId")
+    void updateApartmentById(@Param("apartmentId") Integer apartmentId,
+                             @Param("apartmentNumber") String apartmentNumber,
+                             @Param("floor") Integer floor,
+                             @Param("residentCode") String residentCode,
+                             @Param("phoneNumber") String phoneNumber);
+
+    Apartment findByResidentCodeAndPhoneNumber(String residentCode, String phoneNumber);
 }

@@ -6,14 +6,8 @@ import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
 import be.api.dto.response.UserResponseDTO;
 import be.api.exception.ResourceConflictException; // Custom exception for conflict scenarios
-import be.api.model.Collector;
-import be.api.model.RecyclingDepot;
-import be.api.model.Resident;
-import be.api.model.User;
-import be.api.repository.ICollectorRepository;
-import be.api.repository.IRecyclingDepotRepository;
-import be.api.repository.IResidentRepository;
-import be.api.repository.IUserRepository;
+import be.api.model.*;
+import be.api.repository.*;
 import be.api.security.CustomUserDetailsService;
 import be.api.security.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +35,7 @@ public class AuthService {
     private final IResidentRepository residentRepository;
     private final ICollectorRepository collectorRepository;
     private final IRecyclingDepotRepository recyclingDepotRepository;
+    private final IApartmentRepository apartmentRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
@@ -112,7 +107,18 @@ public class AuthService {
 
     public UserResponseDTO registerResident(ResidentRegistrationDTO residentDto) {
         try {
-            validateUserDetails(residentDto.getEmail(), residentDto.getUsername(), residentDto.getPhoneNumber());
+            validateResidentDetails(residentDto.getEmail(), residentDto.getUsername(), residentDto.getPhoneNumber(), residentDto.getResidentCode());
+
+            // Validate apartment by checking the residentCode and phoneNumber
+            Apartment apartment = apartmentRepository.findByResidentCodeAndPhoneNumber(
+                    residentDto.getResidentCode(),
+                    residentDto.getPhoneNumber()
+            );
+
+            // If apartment is not found, throw an exception
+            if (apartment == null) {
+                throw new ResourceConflictException("Invalid resident code or phone number.");
+            }
 
             User user = createUser(
                     residentDto.getUsername(),
@@ -127,7 +133,7 @@ public class AuthService {
             Resident resident = Resident.builder()
                     .user(user)
                     .rewardPoints(0)
-                    .apartment(null)
+                    .apartment(apartment)
                     .build();
 
             residentRepository.save(resident);
@@ -157,7 +163,7 @@ public class AuthService {
                     .user(user)
                     .rate(0)
                     .numberPoint(0)
-                    .isWorking(collectorDto.getIsWorking())
+                    .isWorking(true)
                     .build();
 
             collectorRepository.save(collector);
@@ -187,7 +193,7 @@ public class AuthService {
                     .user(user)
                     .depotName(recyclingDepotDto.getDepotName())
                     .location(recyclingDepotDto.getLocation())
-                    .isWorking(recyclingDepotDto.getIsWorking())
+                    .isWorking(true)
                     .build();
 
 
@@ -230,6 +236,31 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    private void validateResidentDetails(String email, String username, String phoneNumber, String residentCode) {
+        if (userRepository.findByEmail(email) != null) {
+            throw new ResourceConflictException("Email is already in use.");
+        }
+
+        if (userRepository.findByUsername(username) != null) {
+            throw new ResourceConflictException("Username is already in use.");
+        }
+
+        // Validate phone number and resident code combination in the Apartment repository
+        Apartment apartment = apartmentRepository.findByResidentCodeAndPhoneNumber(residentCode, phoneNumber);
+        if (apartment == null) {
+            throw new ResourceConflictException("Invalid resident code or phone number.");
+        }
+
+        // Validate phone number and resident code formats
+        if (!isValidPhoneNumber(phoneNumber)) {
+            throw new ResourceConflictException("Invalid phone number format.");
+        }
+
+        if (residentCode != null && !isValidResidentCode(residentCode)) {
+            throw new ResourceConflictException("Invalid resident code format.");
+        }
+    }
+
     private void validateUserDetails(String email, String username, String phoneNumber) {
         if (userRepository.findByEmail(email) != null) {
             throw new ResourceConflictException("Email is already in use.");
@@ -242,5 +273,19 @@ public class AuthService {
         if (userRepository.findByPhoneNumber(phoneNumber) != null) {
             throw new ResourceConflictException("Phone number is already in use.");
         }
+    }
+
+
+
+    // Simple validation for phone number format (can be customized as needed)
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        // Example check: Ensure the phone number is 10 digits (you can adjust this as per your requirements)
+        return phoneNumber.matches("\\d{10}");
+    }
+
+    // Simple validation for resident code format (customize as needed)
+    private boolean isValidResidentCode(String residentCode) {
+        // Example check: Ensure resident code follows a specific pattern, like "RES" followed by 3 digits
+        return residentCode.matches("^RES\\d{3}$");
     }
 }
