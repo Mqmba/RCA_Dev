@@ -8,5 +8,4 @@ import lombok.EqualsAndHashCode;
 public class RecyclingDepotRegistrationDTO extends UserRegistrationDTO {
     private String depotName;
     private String location;
-    private Boolean isWorking;
 }
