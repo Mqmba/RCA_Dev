@@ -22,14 +22,15 @@ public class ApartmentService implements IApartmentServices {
     }
 
     @Override
-    public Apartment createApartment(ApartmentRequestDTO apartment) {
+    public Apartment createApartment(ApartmentRequestDTO apartmentDTO) {
         try {
-            Apartment apartmentModify = new Apartment();
-            apartmentModify.setName(apartment.getName());
-            apartmentModify.setDescription(apartment.getDescription());
-            // Set other properties if needed
+            Apartment apartment = new Apartment();
+            apartment.setApartmentNumber(apartmentDTO.getApartmentNumber());  // Map from DTO
+            apartment.setPhoneNumber(apartmentDTO.getPhoneNumber());          // Map from DTO
+            apartment.setFloor(apartmentDTO.getFloor());                      // Map from DTO
+            apartment.setResidentCode(apartmentDTO.getResidentCode());        // Map from DTO
 
-            return apartmentRepository.save(apartmentModify);
+            return apartmentRepository.save(apartment);
         } catch (Exception e) {
             logger.error("Error while creating apartment: {}", e.getMessage());
             return null;
@@ -37,15 +38,20 @@ public class ApartmentService implements IApartmentServices {
     }
 
     @Override
-    public Apartment updateApartment(ApartmentRequestDTO apartmentData) {
+    public Apartment updateApartment(ApartmentRequestDTO apartmentDTO) {
         try {
-            Apartment apartment = apartmentRepository.findById(apartmentData.getApartmentId())
-                    .orElseThrow(() -> new IllegalArgumentException("Apartment not found with ID: " + apartmentData.getApartmentId()));
-            apartment.setName(apartmentData.getName());
-            apartment.setDescription(apartmentData.getDescription());
-            // Update other properties if needed
+            apartmentRepository.updateApartmentById(
+                    apartmentDTO.getApartmentId(),
+                    apartmentDTO.getApartmentNumber(),
+                    apartmentDTO.getFloor(),
+                    apartmentDTO.getResidentCode(),
+                    apartmentDTO.getPhoneNumber()
+            );
 
-            return apartmentRepository.save(apartment);
+            // Retrieve and return the updated apartment (optional)
+            return apartmentRepository.findById(apartmentDTO.getApartmentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Apartment not found with ID: " + apartmentDTO.getApartmentId()));
+
         } catch (Exception e) {
             logger.error("Error while updating apartment: {}", e.getMessage());
             return null;
