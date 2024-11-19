@@ -14,7 +14,7 @@ public class CollectorDepotPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CollectorDepotPaymentId")
-    private int crPaymentId;
+    private int cdPaymentId;
     @Column(name = "Amount")
     private int amount;
     @Column(name = "PaymentStatus")

@@ -68,7 +68,7 @@ public class ResidentServices implements IResidentServices {
     @Override
     public Resident createResident(ResidentRegistrationDTO residentData) {
         try {
-            // Validate resident code
+//             Validate resident code
             if (residentData.getResidentCode() == null || residentData.getResidentCode().isEmpty()) {
                 throw new IllegalArgumentException("Resident code is required");
             }

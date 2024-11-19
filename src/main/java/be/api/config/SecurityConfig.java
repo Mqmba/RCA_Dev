@@ -1,5 +1,6 @@
 package be.api.config;
 
+//import be.api.security.CustomUserDetailsService;
 import be.api.security.CustomUserDetailsService;
 import be.api.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll().requestMatchers("/payment/**").permitAll()
                         .requestMatchers("/messages/**").authenticated()
                         .requestMatchers("/ws/**").permitAll()
 //                        .anyRequest().authenticated()

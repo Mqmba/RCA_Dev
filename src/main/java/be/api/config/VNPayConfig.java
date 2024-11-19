@@ -15,7 +15,8 @@ public class VNPayConfig {
     // nguyenhoanghuy9a5@gmail.com
     // Huynguyen005
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
+    //Deploy sửa returnURL
+    public static String vnp_ReturnUrl = "http://localhost:8080/payment/payment-callback";
     public static String vnp_TmnCode = "TX8R1KM3";
     public static String secretKey = "TCWEWFFGW6ZMETTBMXIHUCQPVE72AI0U";
     // Secret key :
