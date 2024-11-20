@@ -28,8 +28,5 @@ public class RecyclingDepot extends AbstractEntity {
     private String location;
 
     @Column(name = "IsWorking")
-    private Boolean isWorking;
-
-    @Column(name = "balance")
-    private double balance; // Assuming this is a boolean indicating if the depot is operational
+    private Boolean isWorking; // Assuming this is a boolean indicating if the depot is operational
 }

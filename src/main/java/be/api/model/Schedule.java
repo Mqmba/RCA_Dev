@@ -27,7 +27,6 @@ public class Schedule extends AbstractEntity {
 
     public enum scheduleStatus {
         PENDING,
-        ONGOING,
         ACCEPTED,
         FINISHED,
     }

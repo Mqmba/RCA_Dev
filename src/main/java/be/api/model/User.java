@@ -3,12 +3,6 @@ package be.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +15,7 @@ import java.util.List;
         @UniqueConstraint(columnNames = "Username"),
         @UniqueConstraint(columnNames = "PhoneNumber")
 })
-public class User extends AbstractEntity implements UserDetails {
+public class User extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "UserId")
@@ -57,41 +51,6 @@ public class User extends AbstractEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "Role", nullable = false)
     private UserRole role;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
 
     public enum UserRole {
         ROLE_RESIDENT,

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -17,23 +16,20 @@ public class Building {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BuildingId")
-    private int buildingId;
+    private Integer buildingId;
 
-    @Column(name = "BuildingName", nullable = false, unique = true)
-    private String buildingName;
+    @Column(name = "Name", nullable = false)
+    private String name;
 
     @Column(name = "Location")
-    private String location;  // Ensure you have location field.
+    private String location;
 
     @Column(name = "Description")
-    private String description;  // Ensure you have description field.
+    private String description;
 
-    @Column(name = "CreatedAt")
-    private Date createdAt;  // Ensure you have createdAt field.
+    @Column(name = "CreateAt")
+    private Date createdAt;
 
-    @Column(name = "UpdatedAt")
-    private Date updatedAt;  // Ensure you have updatedAt field.
-
-    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Apartment> apartments;
+    @Column(name = "UpdateAt")
+    private Date updatedAt;
 }

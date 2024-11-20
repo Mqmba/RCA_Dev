@@ -1,5 +1,6 @@
 package be.api.services.impl;
 
+import be.api.dto.request.CollectorRegistrationDTO;
 import be.api.model.Collector;
 import be.api.model.Schedule;
 import be.api.model.User;
@@ -7,6 +8,7 @@ import be.api.repository.ICollectorRepository;
 import be.api.repository.IScheduleRepository;
 import be.api.repository.IUserRepository;
 import be.api.services.ICollectorServices;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +24,14 @@ public class CollectorServices implements ICollectorServices {
     private final IUserRepository userRepository;
     private final ScheduleService scheduleService;
     private final IScheduleRepository scheduleRepository;
+    private final ModelMapper modelMapper;
 
-    public CollectorServices(ICollectorRepository collectorRepository, IUserRepository userRepository, ScheduleService scheduleService, IScheduleRepository scheduleRepository) {
+    public CollectorServices(ICollectorRepository collectorRepository, IUserRepository userRepository, ScheduleService scheduleService, IScheduleRepository scheduleRepository, ModelMapper modelMapper) {
         this.collectorRepository = collectorRepository;
         this.userRepository = userRepository;
         this.scheduleService = scheduleService;
         this.scheduleRepository = scheduleRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -56,23 +60,38 @@ public class CollectorServices implements ICollectorServices {
 
     @Override
     public Schedule acceptCollectSchedule(Integer scheduleId) {
+        // Get the currently authenticated user's username
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
-        List<Schedule> schedule = scheduleService.getUserSchedules(user.getUserId());
-        if(schedule.size() >= 5){
+
+        // Check if the user has reached the schedule limit
+        List<Schedule> userSchedules = scheduleService.getUserSchedules(user.getUserId(), Schedule.scheduleStatus.ACCEPTED);
+        if (userSchedules.size() >= 5) {
             throw new IllegalArgumentException("Schedule exceeds limit");
         }
-        Schedule updateSchedule = new Schedule();
-        updateSchedule.setScheduleId(scheduleId);
-        updateSchedule.setStatus(Schedule.scheduleStatus.ACCEPTED);
-        updateSchedule.setCollector(user.getCollector());
-        return scheduleRepository.save(updateSchedule);
+
+        // Retrieve the existing schedule by its ID
+        Schedule existingSchedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
+
+        // Update the necessary fields
+        existingSchedule.setStatus(Schedule.scheduleStatus.ACCEPTED);
+        existingSchedule.setCollector(user.getCollector());
+
+        // Save the updated schedule and return it
+        return scheduleRepository.save(existingSchedule);
     }
+
 
     @Override
     public List<Schedule> getSchedulesByStatus(Schedule.scheduleStatus status) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
         return scheduleService.getUserSchedules(user.getUserId(),status);
+    }
+
+    @Override
+    public Collector createCollector(CollectorRegistrationDTO collector) {
+        return collectorRepository.save(modelMapper.map(collector, Collector.class));
     }
 }

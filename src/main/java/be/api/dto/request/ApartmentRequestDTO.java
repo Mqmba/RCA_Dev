@@ -11,10 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApartmentRequestDTO {
-    private int apartmentId;
-    private String apartmentNumber;  // Assuming apartmentNumber corresponds to "name"
-    private String phoneNumber;      // Assuming phoneNumber corresponds to "description"
-    private int floor;
-    private String residentCode;
-    private int buildingId; // If you're setting building too
+    private Integer apartmentId;
+    private String name;
+    private String description;
 }

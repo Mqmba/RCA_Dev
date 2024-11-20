@@ -1,7 +1,10 @@
 package be.api.controller;
 
+import be.api.dto.request.CollectorRegistrationDTO;
 import be.api.dto.response.ResponseData;
+import be.api.model.Collector;
 import be.api.model.Schedule;
+import be.api.security.anotation.AdminOnly;
 import be.api.security.anotation.CollectorOnly;
 import be.api.services.impl.CollectorServices;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +29,7 @@ public class CollectorController {
             return new ResponseData<>(500, "Internal server error while retrieving list collector with message: " + e.getMessage(), null);
         }
     }
-    @PutMapping("/change-is-working-status")
+    @PatchMapping("/change-is-working-status")
     ResponseData<?> updateCollectorStatus(@RequestParam boolean isWorking, @RequestParam int collectorId){
         try{
             return new ResponseData<>(200,"update success", collectorServices.updateCollector(isWorking, collectorId));
@@ -35,7 +38,7 @@ public class CollectorController {
         }
     }
 
-    @PutMapping("/accept-colecttion-schedule-by-id")
+    @PatchMapping("/accept-collection-schedule-by-id")
     @CollectorOnly
     ResponseEntity<Schedule> acceptCollector(@RequestParam Integer scheduleId) {
         return ResponseEntity.ok(collectorServices.acceptCollectSchedule(scheduleId));
@@ -45,5 +48,11 @@ public class CollectorController {
     @CollectorOnly
     ResponseEntity<List<Schedule>> getCollectionSchedule(@RequestParam Schedule.scheduleStatus status) {
         return ResponseEntity.ok(collectorServices.getSchedulesByStatus(status));
+    }
+
+    @PostMapping("/create-collector")
+    @AdminOnly
+    ResponseEntity<Collector> createCollector(@RequestBody CollectorRegistrationDTO collector) {
+        return ResponseEntity.ok(collectorServices.createCollector(collector));
     }
 }

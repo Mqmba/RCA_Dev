@@ -3,6 +3,8 @@ package be.api.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -11,27 +13,16 @@ import lombok.*;
 @Entity
 @Table(name = "Apartment")
 public class Apartment extends AbstractEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ApartmentId")
+    @Column(name = "ApartmentId")  // Matches database schema
     private int apartmentId;
 
-    @Column(name = "ApartmentNumber", nullable = false, unique = true)
-    private String apartmentNumber;
+    @Column(name = "Name")
+    private String name;
 
-    @Column(name = "Floor", nullable = false)
-    private int floor;
+    @Column(name = "Description")
+    private String description;
 
-    @Column(name = "ResidentCode", nullable = false, unique = true)
-    private String residentCode;
-
-    @Column(name = "PhoneNumber", nullable = false, unique = true)
-    private String phoneNumber;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BuildingId", nullable = false, referencedColumnName = "BuildingId")
-    private Building building;
-
-    @OneToOne(mappedBy = "apartment", cascade = CascadeType.REMOVE)
-    private Resident resident;
 }

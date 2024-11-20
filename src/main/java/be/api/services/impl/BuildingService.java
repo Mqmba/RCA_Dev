@@ -30,7 +30,7 @@ public class BuildingService implements IBuildingService {
         Building existingBuilding = buildingRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Building not found with ID: " + id));
 
-        existingBuilding.setBuildingName(building.getBuildingName());
+        existingBuilding.setName(building.getName());
         existingBuilding.setLocation(building.getLocation());
         existingBuilding.setDescription(building.getDescription());
         existingBuilding.setUpdatedAt(new Date());

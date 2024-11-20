@@ -23,17 +23,11 @@ public class Collector extends AbstractEntity {
     @Column(name = "VehicleLicensePlate")
     private String vehicleLicensePlate;
 
-    @Column(name = "Rate")
-    private Integer rate;
-
     @Column(name = "NumberPoint")
-    private Integer numberPoint;
+    private Integer numberPoint = 0;
 
     @Column(name = "IsWorking")
     private Boolean isWorking;
-
-    @Column(name = "balance")
-    private Double balance;
 
     @OneToOne
     @JoinColumn(name = "UserId", nullable = false, foreignKey = @ForeignKey(name = "FK_Collector_User"))

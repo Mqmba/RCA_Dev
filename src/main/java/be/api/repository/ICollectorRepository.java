@@ -21,6 +21,5 @@ public interface ICollectorRepository extends JpaRepository<Collector, Integer> 
 
     List<User> findByUserUserId(Integer userId);
     List<Collector> findByCollectorId(Integer CollectorId);
-    Collector findByUser_UserId(Integer userId);
 }
 

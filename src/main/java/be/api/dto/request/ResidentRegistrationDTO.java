@@ -6,5 +6,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ResidentRegistrationDTO extends UserRegistrationDTO {
-    private String residentCode;
+    private int rewardPoints;
+    private int apartmentId;
 }
