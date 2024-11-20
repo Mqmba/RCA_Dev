@@ -98,9 +98,11 @@ public class AuthService {
                 return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Token has already been blacklisted");
             }
 
-            // Blacklist the token and clear the authentication context
+            // Blacklist the token
             tokenBlackListService.setTokenBlacklist(token, 3600); // 3600 seconds = 1 hour validity for the blacklisted token
-            SecurityContextHolder.clearContext();
+
+            // Clear the authentication context
+            SecurityContextHolder.getContext().setAuthentication(null);
 
             logger.info("Logout successful for token: {}", token);
             return new ResponseData<>(HttpStatus.OK.value(), "Logout successful", null);
