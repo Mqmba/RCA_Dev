@@ -19,7 +19,8 @@ public class SwaggerConfig {
         List<Server> servers = new ArrayList<>();
         final String securitySchemeName = "bearerAuth";
         servers.add(new Server().url("http://localhost:8080"));
-        servers.add(new Server().url("https://clownfish-app-wvth5.ondigitalocean.app/swagger-ui/index.html"));
+//        servers.add(new Server().url("https://clownfish-app-wvth5.ondigitalocean.app/swagger-ui/index.html"));
+        servers.add(new Server().url("https://clownfish-app-wvth5.ondigitalocean.app"));
 
         return new OpenAPI()
                 .servers(servers)
