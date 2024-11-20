@@ -74,35 +74,40 @@ public class AuthService {
         }
     }
 
-    public ResponseData<?> logout(AuthRequestDTO request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            logger.warn("Logout failed: User not authenticated");
-            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "User not authenticated");
+    public ResponseData<?> logout(String authorizationHeader) {
+        try {
+            // Ensure the header contains the Bearer token
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                logger.warn("Logout failed: Invalid Authorization header");
+                return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Invalid Authorization header");
+            }
+
+            // Extract the token (the part after "Bearer ")
+            String token = authorizationHeader.substring(7); // Removing "Bearer " part
+
+            // Get the authentication object (for any other necessary validations, though token suffices)
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                logger.warn("Logout failed: User not authenticated");
+                return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "User not authenticated");
+            }
+
+            // Token validation - check if it's already blacklisted
+            if (tokenBlackListService.isTokenBlacklisted(token)) {
+                logger.warn("Logout failed: Token has already been blacklisted");
+                return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Token has already been blacklisted");
+            }
+
+            // Blacklist the token and clear the authentication context
+            tokenBlackListService.setTokenBlacklist(token, 3600); // 3600 seconds = 1 hour validity for the blacklisted token
+            SecurityContextHolder.clearContext();
+
+            logger.info("Logout successful for token: {}", token);
+            return new ResponseData<>(HttpStatus.OK.value(), "Logout successful", null);
+        } catch (Exception e) {
+            logger.error("Error during logout: {}", e.getMessage());
+            return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Logout failed");
         }
-
-        String authenticatedUsername = authentication.getName();
-        if (!authenticatedUsername.equals(request.getUsername())) {
-            logger.warn("Logout failed: Provided username {} does not match authenticated username {}", request.getUsername(), authenticatedUsername);
-            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Username does not match authenticated user");
-        }
-
-        String token = (String) authentication.getCredentials();
-        if (token == null) {
-            logger.warn("Logout failed: No token found in authentication credentials");
-            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "No token found");
-        }
-
-        if (tokenBlackListService.isTokenBlacklisted(token)) {
-            logger.warn("Logout failed: Token has already been blacklisted");
-            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Token has already been blacklisted");
-        }
-
-        tokenBlackListService.setTokenBlacklist(token, 3600);
-        SecurityContextHolder.clearContext();
-
-        logger.info("Logout successful for username: {}", authenticatedUsername);
-        return new ResponseData<>(HttpStatus.OK.value(), "Logout successful", authenticatedUsername);
     }
 
     public UserResponseDTO registerResident(ResidentRegistrationDTO residentDto) {
