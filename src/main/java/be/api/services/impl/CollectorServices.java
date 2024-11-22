@@ -65,9 +65,9 @@ public class CollectorServices implements ICollectorServices {
         User user = userRepository.findByUsername(userName);
 
         List<Schedule> schedule = scheduleService.getUserSchedules(user.getUserId());
-        if (schedule.size() >= 5) {
+       /* if (schedule.size() >= 5) {
             throw new IllegalArgumentException("Schedule exceeds limit");
-        }
+        }*/
 
         Schedule existingSchedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
