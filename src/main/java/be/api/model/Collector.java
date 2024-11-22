@@ -1,5 +1,6 @@
 package be.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +28,7 @@ public class Collector extends AbstractEntity {
     private Integer rate;
 
     @Column(name = "NumberPoint")
-    private Integer numberPoint;
+    private double numberPoint;
 
     @Column(name = "IsWorking")
     private Boolean isWorking;
@@ -37,5 +38,6 @@ public class Collector extends AbstractEntity {
 
     @OneToOne
     @JoinColumn(name = "UserId", nullable = false, foreignKey = @ForeignKey(name = "FK_Collector_User"))
+    @JsonBackReference
     private User user;
 }

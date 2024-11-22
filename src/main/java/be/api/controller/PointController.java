@@ -20,9 +20,9 @@ public class PointController {
 
     @GetMapping("/public/point/get-point-by-user")
     @ResidentOrCollectorOnly
-    public ResponseData<Integer> getPointByUser() {
+    public ResponseData<?> getPointByUser() {
         try {
-            int points = pointServices.getPoints();
+            double points = pointServices.getPoints();
             return new ResponseData<>(200, "Success", points);
         } catch (Exception e) {
             return new ResponseData<>(500, "An unexpected error occurred", null);

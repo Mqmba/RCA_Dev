@@ -57,8 +57,8 @@ public class AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-            final String token = jwtTokenUtil.generateToken(userDetails);
+             User userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+             String token = jwtTokenUtil.generateToken(userDetails);
 
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)

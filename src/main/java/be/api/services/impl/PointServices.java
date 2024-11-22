@@ -52,7 +52,7 @@ public class PointServices implements IPointServices {
 //    }
 
     @Override
-    public int getPoints() {
+    public double getPoints() {
         try{
            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             User user = userRepository.findByUsername(userName);

@@ -1,8 +1,12 @@
 package be.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,7 +22,7 @@ public class Resident extends AbstractEntity {
     private int residentId;
 
     @Column(name = "RewardPoints")
-    private int rewardPoints = 0;
+    private double rewardPoints = 0;
 
     @OneToOne
     @JoinColumn(name = "UserId", nullable = false, referencedColumnName = "userId")
@@ -27,4 +31,6 @@ public class Resident extends AbstractEntity {
     @OneToOne
     @JoinColumn(name = "ApartmentId", nullable = false, referencedColumnName = "ApartmentId")
     private Apartment apartment;
+
+
 }
