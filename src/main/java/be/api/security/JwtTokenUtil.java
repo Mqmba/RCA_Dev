@@ -1,5 +1,6 @@
 package be.api.security;
 
+import be.api.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -26,8 +27,15 @@ public class JwtTokenUtil {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(User userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", userDetails.getUserId());
+        extraClaims.put("username", userDetails.getUsername());
+        extraClaims.put("email", userDetails.getEmail());
+        extraClaims.put("role", userDetails.getRole());
+        extraClaims.put("firstName", userDetails.getFirstName());
+        extraClaims.put("lastName", userDetails.getLastName());
+        return generateToken(extraClaims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
@@ -66,5 +74,20 @@ public class JwtTokenUtil {
     private Key getSignInKey() {
         byte[] keyBytes = SECRET_KEY.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public Map<String, Object> getTokenInfo(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+
+            Map<String, Object> tokenInfo = new HashMap<>();
+            for (Map.Entry<String, Object> entry : claims.entrySet()) {
+                tokenInfo.put(entry.getKey(), entry.getValue());
+            }
+            return tokenInfo;
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token", e);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package be.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,8 +31,10 @@ public class Apartment extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BuildingId", nullable = false, referencedColumnName = "BuildingId")
+    @JsonBackReference
     private Building building;
 
-    @OneToOne(mappedBy = "apartment", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "apartment", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @JsonBackReference
     private Resident resident;
 }

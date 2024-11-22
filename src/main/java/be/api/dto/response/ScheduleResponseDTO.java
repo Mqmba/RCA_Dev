@@ -1,6 +1,6 @@
 package be.api.dto.response;
 
-import be.api.model.User;
+import be.api.model.Resident;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +13,15 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScheduleResponseDTO {
-    private String scheduleId;
+    private int scheduleId;
+    private String materialType;
+    private String status;
+    private int BuildingId;
+    private int RecyclingDepotId;
+    private int CollectorId;
+    private int ResidentId;
     private Date scheduleDate;
-    private Date createAt;
-    private Date updateAt;
+    private Date createdAt;
+    private Date updatedAt;
+
 }

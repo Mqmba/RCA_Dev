@@ -1,5 +1,6 @@
 package be.api.services;
 
+import be.api.dto.response.ScheduleResponseDTO;
 import be.api.model.Collector;
 import be.api.model.Schedule;
 import org.springframework.data.domain.Page;
@@ -11,4 +12,5 @@ public interface ICollectorServices {
     Collector updateCollector(boolean isWorking, int collectorId);
     Schedule acceptCollectSchedule(Integer scheduleId);
     List<Schedule> getSchedulesByStatus(Schedule.scheduleStatus status);
+    List<Schedule> getListScheduleByStatus (Schedule.scheduleStatus status);
 }

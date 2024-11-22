@@ -4,6 +4,6 @@ import be.api.dto.request.PointRequestDTO;
 import jakarta.annotation.Nullable;
 
 public interface IPointServices {
-    int getPoints();
+    double getPoints();
     String updatePointByUser (PointRequestDTO pointRequest);
 }

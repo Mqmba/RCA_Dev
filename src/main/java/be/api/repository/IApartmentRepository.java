@@ -19,4 +19,6 @@ public interface IApartmentRepository extends JpaRepository<Apartment, Integer> 
                              @Param("phoneNumber") String phoneNumber);
 
     Apartment findByResidentCodeAndPhoneNumber(String residentCode, String phoneNumber);
+
+    Apartment findByResident_ResidentId(int residentId);
 }
