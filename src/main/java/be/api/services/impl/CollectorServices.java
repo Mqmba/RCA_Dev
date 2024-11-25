@@ -65,9 +65,9 @@ public class CollectorServices implements ICollectorServices {
         User user = userRepository.findByUsername(userName);
 
         List<Schedule> schedule = scheduleService.getUserSchedules(user.getUserId());
-       /* if (schedule.size() >= 5) {
-            throw new IllegalArgumentException("Schedule exceeds limit");
-        }*/
+//        if (schedule.size() >= 5) {
+//            throw new IllegalArgumentException("Schedule exceeds limit");
+//        }
 
         Schedule existingSchedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
@@ -83,12 +83,21 @@ public class CollectorServices implements ICollectorServices {
     @Override
     public List<Schedule> getSchedulesByStatus(Schedule.scheduleStatus status) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
         User user = userRepository.findByUsername(userName);
         List<Schedule> data = scheduleRepository.findByCollectorAndStatus(user.getCollector().getCollectorId(),status);
         return data;
     }
 
-    // get tat list schedule theo status
+    @Override
+    public List<Schedule> getAllScheduleByUser() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        List<Schedule> data = scheduleRepository.findByCollector(user.getCollector().getCollectorId());
+        return data;
+    }
+
+    // get all list schedule theo status
     @Override
     public List<Schedule> getListScheduleByStatus(Schedule.scheduleStatus status) {
         List<Schedule> data = scheduleRepository.findByStatus(status);
@@ -97,8 +106,12 @@ public class CollectorServices implements ICollectorServices {
 //            result.add(modelMapper.map(schedule, ScheduleResponseDTO.class));
 //        }
         return data;
-
-
-
     }
+
+    @Override
+    public List<Schedule> getAllSchedules() {
+        return scheduleRepository.findAll();
+    }
+
+
 }
