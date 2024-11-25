@@ -94,6 +94,18 @@ public class CRPaymentServices implements ICRPaymentServices {
         return response;
     }
 
+    @Override
+    public CRPaymentResponse findByScheduleId(Integer scheduleId) {
+        CollectorResidentPayment payment = crPaymentRepository.findByScheduleId(scheduleId);
+        List<CRPayment_Detail> detail = crPaymentDetailRepository.findByCrPaymentId(payment.getCrPaymentId());
+
+        CRPaymentResponse response = new CRPaymentResponse();
+        response.setPayment(payment);
+        response.setPaymentDetails(detail);
+
+        return response;
+    }
+
 
     private Integer calculateAmountPoint(List<CRPaymentRequestDTO.MaterialDTO> materials) {
         return materials.stream()

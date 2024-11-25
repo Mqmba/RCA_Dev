@@ -22,5 +22,7 @@ public interface IScheduleService {
 
     @Query("SELECT s FROM Schedule s WHERE s.residentId = :residentId AND s.status = :status")
     List<Schedule> getScheduleOfResidentByUserIdAndStatus(Integer residentId, Schedule.scheduleStatus status);
+
+
 }
 

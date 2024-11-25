@@ -38,6 +38,5 @@ public class Collector extends AbstractEntity {
 
     @OneToOne
     @JoinColumn(name = "UserId", nullable = false, foreignKey = @ForeignKey(name = "FK_Collector_User"))
-    @JsonBackReference
     private User user;
 }

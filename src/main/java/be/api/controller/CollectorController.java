@@ -59,13 +59,36 @@ public class CollectorController {
 
     @GetMapping("/get-list-collection-schedule-by-user-by-status")
     @CollectorOnly
-    ResponseData<List<Schedule>> getCollectionSchedule(@RequestParam Schedule.scheduleStatus status) {
-//        return ResponseData.ok(collectorServices.getSchedulesByStatus(status));
+    ResponseData<List<Schedule>> getCollectionSchedule(@RequestParam(value = "status", required = false) Schedule.scheduleStatus status,
+                                                       @RequestParam(value = "sortOrder", defaultValue = "ASC") String sortOrder)
+                                                        {
         try{
+
+            if (!sortOrder.equalsIgnoreCase("ASC") && !sortOrder.equalsIgnoreCase("DESC")) {
+                return new ResponseData<>(400, "Invalid sortOrder parameter. Use 'ASC' or 'DESC'.", null);
+            }
+
+            List<Schedule> schedules;
+
+            if(status == null) {
+                schedules = collectorServices.getAllScheduleByUser();
+            }
+            else {
+                schedules = collectorServices.getListScheduleByStatus(status);
+            }
+
+            schedules.sort((s1, s2) -> {
+                if (sortOrder.equalsIgnoreCase("ASC")) {
+                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                } else {
+                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
+                }
+            });
+
             return new ResponseData<>(
                     200,
                     "Successfully retrieved list collector",
-                    collectorServices.getSchedulesByStatus(status));
+                    schedules);
         }
         catch (ResourceNotFoundException e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
@@ -74,14 +97,32 @@ public class CollectorController {
 
 
     @GetMapping("/get-list-collection-schedule-by-status")
-    ResponseData<?> getCollectionScheduleByStatus(@RequestParam Schedule.scheduleStatus status) {
-        try{
-            return new ResponseData<>(
-                    200,
-                    "Successfully retrieved list collector",
-                    collectorServices.getListScheduleByStatus(status));
+    ResponseData<?> getCollectionScheduleByStatus(
+            @RequestParam(value = "status", required = false) Schedule.scheduleStatus status,
+            @RequestParam(value = "sortOrder", defaultValue = "ASC") String sortOrder) {
+        try {
+            if (!sortOrder.equalsIgnoreCase("ASC") && !sortOrder.equalsIgnoreCase("DESC")) {
+                return new ResponseData<>(400, "Invalid sortOrder parameter. Use 'ASC' or 'DESC'.", null);
+            }
+
+            List<Schedule> schedules;
+            if (status == null) {
+                schedules = collectorServices.getAllSchedules();
+            } else {
+                schedules = collectorServices.getListScheduleByStatus(status);
+            }
+
+            schedules.sort((s1, s2) -> {
+                if (sortOrder.equalsIgnoreCase("ASC")) {
+                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                } else {
+                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
+                }
+            });
+
+            return new ResponseData<>(200, "Successfully retrieved sorted list of schedules", schedules);
         } catch (Exception e) {
-            return new ResponseData<>(500, "Internal server error while retrieving list collector with message: " + e.getMessage(), null);
+            return new ResponseData<>(500, "Internal server error while retrieving and sorting schedules: " + e.getMessage(), null);
         }
     }
 
@@ -107,6 +148,15 @@ public class CollectorController {
     ResponseData<?> getPaymentCRById(@RequestParam int paymentId) {
         try{
             return new ResponseData<>(200,"get-success", crPaymentServices.getCRPaymentById(paymentId));
+        }catch (Exception e) {
+            return new ResponseData<>(500, "Internal server error while getting payment with message: " + e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("get-payment-cr-by-schedule-id")
+    ResponseData<?> getPaymentCRByScheduleId(@RequestParam int scheduleId) {
+        try{
+            return new ResponseData<>(200,"get-success", crPaymentServices.findByScheduleId(scheduleId));
         }catch (Exception e) {
             return new ResponseData<>(500, "Internal server error while getting payment with message: " + e.getMessage(), null);
         }

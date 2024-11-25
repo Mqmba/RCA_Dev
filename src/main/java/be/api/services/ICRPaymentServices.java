@@ -12,4 +12,6 @@ public interface ICRPaymentServices {
 
     CRPaymentResponse getCRPaymentById(Integer paymentId);
 
+    CRPaymentResponse findByScheduleId(Integer scheduleId);
+
 }

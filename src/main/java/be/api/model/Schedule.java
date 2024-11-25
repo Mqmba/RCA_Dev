@@ -24,7 +24,7 @@ public class Schedule extends AbstractEntity {
     @Column(name = "ScheduleDate")
     private Date scheduleDate;
 
-    @Column(name = "MaterialType")
+    @Column(name = "MaterialType", columnDefinition = "TEXT")
     private String materialType;
 
     public enum scheduleStatus {
@@ -56,6 +56,5 @@ public class Schedule extends AbstractEntity {
     @JoinColumn(name = "ResidentId", referencedColumnName = "ResidentId")
     @JsonManagedReference
     private Resident residentId;
-
 
 }

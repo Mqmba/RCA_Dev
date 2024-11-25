@@ -25,6 +25,10 @@ public interface IScheduleRepository extends JpaRepository<Schedule, Integer> {
     @Query("SELECT s FROM Schedule s WHERE s.status = :status AND s.collector.collectorId = :collectorId")
     List<Schedule> findByCollectorAndStatus(@Param("collectorId") int collectorId, @Param("status") Schedule.scheduleStatus status);
 
+    @Query("SELECT s FROM Schedule s WHERE s.collector.collectorId = :collectorId")
+    List<Schedule> findByCollector(@Param("collectorId") Integer collectorId);
+
+
     @Query("SELECT s FROM Schedule s WHERE s.residentId.residentId = :residentId AND s.status = :status")
     List<Schedule> findByResidentAndStatus(@Param("residentId") Integer residentId, @Param("status") Schedule.scheduleStatus status);
 }

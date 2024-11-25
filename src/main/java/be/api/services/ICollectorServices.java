@@ -13,4 +13,6 @@ public interface ICollectorServices {
     Schedule acceptCollectSchedule(Integer scheduleId);
     List<Schedule> getSchedulesByStatus(Schedule.scheduleStatus status);
     List<Schedule> getListScheduleByStatus (Schedule.scheduleStatus status);
+    List<Schedule> getAllSchedules();
+    List<Schedule> getAllScheduleByUser();
 }
