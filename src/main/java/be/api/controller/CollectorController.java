@@ -79,9 +79,9 @@ public class CollectorController {
 
             schedules.sort((s1, s2) -> {
                 if (sortOrder.equalsIgnoreCase("ASC")) {
-                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                    return s1.getScheduleDate().compareTo(s2.getCreatedAt());
                 } else {
-                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
+                    return s2.getScheduleDate().compareTo(s1.getCreatedAt());
                 }
             });
 
@@ -114,9 +114,9 @@ public class CollectorController {
 
             schedules.sort((s1, s2) -> {
                 if (sortOrder.equalsIgnoreCase("ASC")) {
-                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                    return s1.getScheduleDate().compareTo(s2.getCreatedAt());
                 } else {
-                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
+                    return s2.getScheduleDate().compareTo(s1.getCreatedAt());
                 }
             });
 
