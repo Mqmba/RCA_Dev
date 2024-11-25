@@ -8,6 +8,8 @@ import be.api.model.Schedule;
 import be.api.model.User;
 import be.api.repository.IUserRepository;
 import be.api.security.JwtTokenUtil;
+import be.api.security.anotation.ResidentOrCollectorOnly;
+import be.api.services.impl.CollectorServices;
 import be.api.services.impl.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ import java.util.Map;
 public class ScheduleController {
     private final ScheduleService scheduleService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final CollectorServices collectorServices;
+
     @GetMapping("/get-list-collection-schedule-by-paging")
     public ResponseEntity<Page<Schedule>> getAllSchedules(Pageable pageable) {
         return ResponseEntity.ok(scheduleService.getAllSchedules(pageable));
@@ -89,6 +93,46 @@ public class ScheduleController {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
+
+    @GetMapping("/get-list-collection-schedule-by-user-by-status")
+    @ResidentOrCollectorOnly
+    ResponseData<List<Schedule>> getCollectionSchedule(@RequestParam(value = "status", required = false) Schedule.scheduleStatus status,
+                                                       @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder)
+    {
+        try{
+
+            if (!sortOrder.equalsIgnoreCase("ASC") && !sortOrder.equalsIgnoreCase("DESC")) {
+                return new ResponseData<>(400, "Invalid sortOrder parameter. Use 'ASC' or 'DESC'.", null);
+            }
+
+            List<Schedule> schedules;
+
+            if(status == null) {
+                schedules = collectorServices.getAllScheduleByUser();
+            }
+            else {
+                schedules = collectorServices.getSchedulesByStatus(status);
+            }
+
+            schedules.sort((s1, s2) -> {
+                if (sortOrder.equalsIgnoreCase("ASC")) {
+                    return s1.getScheduleDate().compareTo(s2.getScheduleDate());
+                } else {
+                    return s2.getScheduleDate().compareTo(s1.getScheduleDate());
+                }
+            });
+
+            return new ResponseData<>(
+                    200,
+                    "Successfully retrieved list collector",
+                    schedules);
+        }
+        catch (ResourceNotFoundException e){
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
+
 
     @GetMapping("/get-schedule-by-id")
     public ResponseData<Schedule> getScheduleById(@RequestParam Integer id) {
