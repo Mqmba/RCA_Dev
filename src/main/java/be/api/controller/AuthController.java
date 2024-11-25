@@ -49,6 +49,18 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/login-admin")
+    public ResponseData<?> authenticateAdmin(@RequestBody AuthRequestDTO request) {
+        try {
+            logger.info("Attempting to authenticate admin: {}", request.getUsername());
+            return authService.loginAdmin(request);
+        } catch (Exception e) {
+            logger.error("Authentication error: {}", e.getMessage());
+            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Authentication failed");
+        }
+    }
+
+
     @PostMapping("/logout")
     @Operation(
             summary = "Logout user",
@@ -107,6 +119,7 @@ public class AuthController {
             return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Recycling depot registration failed");
         }
     }
+
 
 
 }

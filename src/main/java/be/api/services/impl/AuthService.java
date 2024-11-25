@@ -74,6 +74,43 @@ public class AuthService {
         }
     }
 
+    public ResponseData<?> loginAdmin(AuthRequestDTO request)
+    {
+        try {
+            if (request.getUsername() == null || request.getPassword() == null ||
+                    request.getUsername().isEmpty() || request.getPassword().isEmpty()) {
+                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Username and password must not be null or empty.");
+            }
+
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            User userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+            String token = jwtTokenUtil.generateToken(userDetails);
+
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+            if (roles.contains("ROLE_ADMIN")) {
+                return new ResponseData<>(HttpStatus.OK.value(),
+                        "Authentication successful",
+                        new AuthResponseDTO(token, roles)
+                );
+            } else {
+                return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized access");
+            }
+        } catch (BadCredentialsException e) {
+            logger.warn("Authentication error: Invalid username or password");
+            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Invalid username or password");
+        }
+    }
+
+
+
     public ResponseData<?> logout(String authorizationHeader) {
         try {
             // Ensure the header contains the Bearer token

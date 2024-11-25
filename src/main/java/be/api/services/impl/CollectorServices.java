@@ -85,16 +85,29 @@ public class CollectorServices implements ICollectorServices {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User user = userRepository.findByUsername(userName);
-        List<Schedule> data = scheduleRepository.findByCollectorAndStatus(user.getCollector().getCollectorId(),status);
-        return data;
+
+        if(user.getRole() == User.UserRole.ROLE_COLLECTOR){
+            return scheduleRepository.findByCollectorAndStatus(user.getCollector().getCollectorId(),status);
+        }
+        else if(user.getRole() == User.UserRole.ROLE_RESIDENT){
+            return scheduleRepository.findByResidentAndStatus(user.getResident().getResidentId(),status);
+
+        }
+        return null;
     }
 
     @Override
     public List<Schedule> getAllScheduleByUser() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
-        List<Schedule> data = scheduleRepository.findByCollector(user.getCollector().getCollectorId());
-        return data;
+        User.UserRole role = user.getRole();
+        if (role == User.UserRole.ROLE_COLLECTOR) {
+            return scheduleRepository.findByCollector(user.getCollector().getCollectorId());
+        }
+        else if (role == User.UserRole.ROLE_RESIDENT) {
+            return  scheduleRepository.findByResidentId(user.getResident().getResidentId());
+        }
+        return null;
     }
 
     // get all list schedule theo status

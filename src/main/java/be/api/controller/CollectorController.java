@@ -8,6 +8,7 @@ import be.api.exception.ResourceNotFoundException;
 import be.api.model.Material;
 import be.api.model.Schedule;
 import be.api.security.anotation.CollectorOnly;
+import be.api.security.anotation.ResidentOrCollectorOnly;
 import be.api.services.impl.CRPaymentServices;
 import be.api.services.impl.CollectorServices;
 import lombok.RequiredArgsConstructor;
@@ -58,9 +59,9 @@ public class CollectorController {
     }
 
     @GetMapping("/get-list-collection-schedule-by-user-by-status")
-    @CollectorOnly
+    @ResidentOrCollectorOnly
     ResponseData<List<Schedule>> getCollectionSchedule(@RequestParam(value = "status", required = false) Schedule.scheduleStatus status,
-                                                       @RequestParam(value = "sortOrder", defaultValue = "ASC") String sortOrder)
+                                                       @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder)
                                                         {
         try{
 
@@ -74,14 +75,14 @@ public class CollectorController {
                 schedules = collectorServices.getAllScheduleByUser();
             }
             else {
-                schedules = collectorServices.getListScheduleByStatus(status);
+                schedules = collectorServices.getSchedulesByStatus(status);
             }
 
             schedules.sort((s1, s2) -> {
                 if (sortOrder.equalsIgnoreCase("ASC")) {
-                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                    return s1.getScheduleDate().compareTo(s2.getScheduleDate());
                 } else {
-                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
+                    return s2.getScheduleDate().compareTo(s1.getScheduleDate());
                 }
             });
 
@@ -114,9 +115,9 @@ public class CollectorController {
 
             schedules.sort((s1, s2) -> {
                 if (sortOrder.equalsIgnoreCase("ASC")) {
-                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                    return s1.getScheduleDate().compareTo(s2.getScheduleDate());
                 } else {
-                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
+                    return s2.getScheduleDate().compareTo(s1.getScheduleDate());
                 }
             });
 
