@@ -38,8 +38,7 @@ public class AdminServices implements IAdminServices  {
             long totalCollectorAccount = userRepository.getTotalAccountByRole(User.UserRole.ROLE_COLLECTOR);
             long totalResidentAccount = userRepository.getTotalAccountByRole(User.UserRole.ROLE_RESIDENT);
             long totalTransaction = scheduleRepository.findByNumberTransaction(
-                    Schedule.scheduleStatus.ONGOING,
-                    Schedule.scheduleStatus.FINISHED
+                    Schedule.scheduleStatus.SUCCESS
             );
 
             List<Resident> top5Resident = residentRepository.findTop5ByOrderByRewardPointsDesc();
@@ -76,8 +75,7 @@ public class AdminServices implements IAdminServices  {
     public AdminActivityResponseDTO getAdminActivity() {
         AdminActivityResponseDTO adminActivityResponseDTO = new AdminActivityResponseDTO();
         long totalTransaction = scheduleRepository.findByNumberTransaction(
-                    Schedule.scheduleStatus.ONGOING,
-                    Schedule.scheduleStatus.FINISHED
+                    Schedule.scheduleStatus.SUCCESS
             );
         long totalResident = userRepository.getTotalAccountByRole(User.UserRole.ROLE_RESIDENT);
         List<Resident> residents = residentRepository.findAll();
@@ -98,10 +96,9 @@ public class AdminServices implements IAdminServices  {
     public AdminTransactionResponseDTO getAdminTransaction() {
         AdminTransactionResponseDTO adminTransactionResponseDTO = new AdminTransactionResponseDTO();
         long totalTransaction = scheduleRepository.findAll().size();
-        long totalTransactionOngoing = scheduleRepository.findByAccepteAndOnGoing(Schedule.scheduleStatus.ACCEPTED,
-                Schedule.scheduleStatus.ONGOING);
+        long totalTransactionOngoing = scheduleRepository.findByAccepteAndOnGoing(Schedule.scheduleStatus.ACCEPTED);
         long totalTransactionPending = scheduleRepository.findByStatus(Schedule.scheduleStatus.PENDING).size();
-        long totalTransactionFinished = scheduleRepository.findByStatus(Schedule.scheduleStatus.FINISHED).size();
+        long totalTransactionFinished = scheduleRepository.findByStatus(Schedule.scheduleStatus.SUCCESS).size();
         List<Schedule> top5ScheduleByCreatedAt = scheduleRepository.findTop5ByOrderByCreatedAtDesc();
 
 

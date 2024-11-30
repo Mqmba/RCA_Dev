@@ -1,5 +1,6 @@
 package be.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,19 +11,36 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "CollectorDepot_Payment")
-public class CollectorDepotPayment {
+public class CollectorDepotPayment extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CollectorDepotPaymentId")
+
     private int cdPaymentId;
     @Column(name = "Amount")
-    private int amount;
-    @Column(name = "PaymentStatus")
-    private int status;
+    private double amount;
+
+
+    public enum CollectorDepotPaymentStatus {
+        PENDING,
+        SUCCESS,
+        CANCELED
+    }
+
+    @Column(name = "Status")
+    @Enumerated(EnumType.STRING)
+    private CollectorDepotPaymentStatus status = CollectorDepotPaymentStatus.PENDING;
+
+    @Column(name = "MaterialType", columnDefinition = "TEXT")
+    private String materialType;
+
     @ManyToOne
-    @JoinColumn(name = "CollectorId")
+    @JoinColumn(name = "CollectorId", nullable = false, referencedColumnName = "CollectorId")
+    @JsonManagedReference
     private Collector collector;
+
     @ManyToOne
-    @JoinColumn(name = "RecyclingDepotId")
-    private RecyclingDepot depot;
+    @JoinColumn(name = "RecyclingDepotId", referencedColumnName = "RecyclingDepotId")
+    @JsonManagedReference
+    private RecyclingDepot recyclingDepot;
 }

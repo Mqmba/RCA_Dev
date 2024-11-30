@@ -1,5 +1,6 @@
 package be.api.services.impl;
 
+import be.api.dto.request.CreateDepotRequestDTO;
 import be.api.model.RecyclingDepot;
 import be.api.model.User;
 import be.api.repository.IRecyclingDepotRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,8 +25,8 @@ import java.util.Optional;
 public class RecyclingDepotService implements IRecyclingDepotService {
 
     private final IRecyclingDepotRepository recyclingDepotRepository;
-
     private final IUserRepository userRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(RecyclingDepotService.class);
 
     @Override
@@ -33,21 +35,25 @@ public class RecyclingDepotService implements IRecyclingDepotService {
     }
 
     @Override
-    public Page<RecyclingDepot> getActiveRecyclingDepots(Pageable pageable) {
-        return recyclingDepotRepository.findByIsWorkingTrue(pageable);
+    public List<RecyclingDepot> getActiveRecyclingDepots() {
+        return recyclingDepotRepository.findByIsWorkingTrue();
     }
 
     @Override
-    public RecyclingDepot createRecyclingDepot(RecyclingDepot recyclingDepot) {
+    public RecyclingDepot createRecyclingDepot(CreateDepotRequestDTO dto) {
+        Optional<User> user = userRepository.findById(dto.userId);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        RecyclingDepot recyclingDepot = new RecyclingDepot();
+        recyclingDepot.setDepotName(dto.depotName);
+        recyclingDepot.setLocation(dto.location);
+        recyclingDepot.setIsWorking(true);
+        recyclingDepot.setLatitude(dto.latitude);
+        recyclingDepot.setLongitude(dto.longitude);
+        recyclingDepot.setUser(user.get());
+        recyclingDepot.setBalance(1000);
 
-        Optional<User> userOpt = userRepository.findById(recyclingDepot.getUser().getUserId());
-        if (userOpt.isEmpty()) {
-            throw new RuntimeException("User with ID " + recyclingDepot.getUser().getUserId() + " does not exist.");
-        }
-        if (userOpt.get().getRole() != User.UserRole.ROLE_ADMIN) {
-            throw new RuntimeException("Only Admin allowed to create recycling depot");
-        }
-        recyclingDepot.setUser(userOpt.get());
         return recyclingDepotRepository.save(recyclingDepot);
     }
 
@@ -72,4 +78,11 @@ public class RecyclingDepotService implements IRecyclingDepotService {
         }
         throw new RuntimeException("RecyclingDepot not found with id: " + id);
     }
+
+    @Override
+    public List<RecyclingDepot> getListRecyclingDepots() {
+        return recyclingDepotRepository.findAll();
+    }
+
+
 }

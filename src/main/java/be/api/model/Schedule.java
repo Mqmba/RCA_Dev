@@ -29,9 +29,9 @@ public class Schedule extends AbstractEntity {
 
     public enum scheduleStatus {
         PENDING,
-        ONGOING,
         ACCEPTED,
-        FINISHED,
+        SUCCESS,
+        CANCELED
     }
 
     @Column(name = "Status")

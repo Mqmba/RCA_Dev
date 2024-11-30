@@ -17,9 +17,6 @@ public class RecyclingDepot extends AbstractEntity {
     @Column(name = "RecyclingDepotId")
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "UserId", nullable = false, foreignKey = @ForeignKey(name = "FK_RecyclingDepot_User"))
-    private User user;
 
     @Column(name = "DepotName")
     private String depotName;
@@ -27,9 +24,20 @@ public class RecyclingDepot extends AbstractEntity {
     @Column(name = "Location")
     private String location;
 
+    @Column(name="Latitude")
+    private double latitude;
+
+    @Column(name="Longitude")
+    private double longitude;
+
     @Column(name = "IsWorking")
     private Boolean isWorking;
 
-    @Column(name = "balance")
-    private double balance; // Assuming this is a boolean indicating if the depot is operational
+    @Column(name = "Balance")
+    private double balance;
+
+    @OneToOne
+    @JoinColumn(name = "UserId", nullable = false, referencedColumnName = "userId")
+    private User user;
+
 }

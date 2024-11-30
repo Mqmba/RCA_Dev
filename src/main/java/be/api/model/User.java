@@ -117,7 +117,7 @@ public class User extends AbstractEntity implements UserDetails {
     private Collector collector;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore  // Prevents infinite recursion
+    @JsonIgnore
     @JsonBackReference
     private RecyclingDepot recyclingDepot;
 }

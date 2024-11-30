@@ -49,6 +49,7 @@ public class CRPaymentServices implements ICRPaymentServices {
             crPaymentDetailRepository.save(detail);
         });
 
+
         // Trả về ID của CollectorResident_Payment vừa tạo
         return crPaymentId;
     }
@@ -60,7 +61,7 @@ public class CRPaymentServices implements ICRPaymentServices {
                     .orElseThrow(() -> new IllegalArgumentException("Payment not found with ID: " + paymentId));
             existingPayment.setStatus(2);
             Schedule schedule = existingPayment.getSchedule();
-            schedule.setStatus(Schedule.scheduleStatus.ONGOING);
+            schedule.setStatus(Schedule.scheduleStatus.SUCCESS);
 
             Resident resident = schedule.getResidentId();
             resident.setRewardPoints(resident.getRewardPoints() + existingPayment.getAmountPoint());

@@ -4,7 +4,7 @@ import be.api.config.VNPayConfig;
 import be.api.infrastructure.AuthenticateJwt;
 import be.api.model.Collector;
 import be.api.model.CollectorDepotPayment;
-import be.api.repository.CDPaymentRepository;
+import be.api.repository.ICDPaymentRepository;
 import be.api.repository.ICollectorRepository;
 import be.api.services.IPaymentServices;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,14 +18,12 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @Service
 public class PaymentServices implements IPaymentServices {
     @Autowired
     private ICollectorRepository collectorRepository;
     @Autowired
-    private CDPaymentRepository cdPaymentRepository;
+    private ICDPaymentRepository cdPaymentRepository;
 
     @Override
     public String payWithVNPAYOnline(HttpServletRequest request, int price) throws UnsupportedEncodingException {
@@ -34,7 +32,6 @@ public class PaymentServices implements IPaymentServices {
         CollectorDepotPayment collectorDepotPayment = new CollectorDepotPayment();
         collectorDepotPayment.setAmount(price);
         collectorDepotPayment.setCollector(collector);
-        collectorDepotPayment.setStatus(1);
         cdPaymentRepository.save(collectorDepotPayment);
         float vnp_Amount = price;
 
@@ -101,7 +98,6 @@ public class PaymentServices implements IPaymentServices {
     @Override
     public Boolean paymentCallback(int paymentId) {
         Optional<CollectorDepotPayment> collectorDepotPayment = cdPaymentRepository.findById(paymentId);
-        collectorDepotPayment.ifPresent(depotPayment -> depotPayment.setStatus(2));
         cdPaymentRepository.save(collectorDepotPayment.get());
         return true;
     }
