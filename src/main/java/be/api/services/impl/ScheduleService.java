@@ -121,7 +121,7 @@ public class ScheduleService implements IScheduleService {
 
         // Fetch schedules for default statuses
         return scheduleRepository.findByCollectorAndStatusIn(collector,
-                List.of(Schedule.scheduleStatus.ONGOING, Schedule.scheduleStatus.ACCEPTED));
+                List.of(Schedule.scheduleStatus.ACCEPTED));
     }
 
 

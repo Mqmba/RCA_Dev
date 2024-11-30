@@ -35,16 +35,14 @@ public interface IScheduleRepository extends JpaRepository<Schedule, Integer> {
     @Query("SELECT s FROM Schedule s WHERE s.residentId.residentId = :residentId AND s.status = :status")
     List<Schedule> findByResidentAndStatus(@Param("residentId") Integer residentId, @Param("status") Schedule.scheduleStatus status);
 
-    @Query("SELECT COUNT(s) FROM Schedule s WHERE s.status = :ONGOING OR s.status = :FINISHED")
+    @Query("SELECT COUNT(s) FROM Schedule s WHERE s.status = :SUCCESS")
     long findByNumberTransaction(
-            @Param("ONGOING") Schedule.scheduleStatus ONGOING,
-            @Param("FINISHED") Schedule.scheduleStatus FINISHED
+            @Param("SUCCESS") Schedule.scheduleStatus SUCCESS
     );
 
-    @Query("SELECT COUNT(s) FROM Schedule s WHERE s.status = :ACCEPTED OR s.status = :ONGOING")
+    @Query("SELECT COUNT(s) FROM Schedule s WHERE s.status = :ACCEPTED")
     long findByAccepteAndOnGoing(
-            @Param("ACCEPTED") Schedule.scheduleStatus ACCEPTED,
-            @Param("ONGOING") Schedule.scheduleStatus ONGOING
+            @Param("ACCEPTED") Schedule.scheduleStatus ACCEPTED
     );
     @Query("Select s FROM Schedule s  ORDER BY s.createdAt DESC")
     List<Schedule> findTop5ByOrderByCreatedAtDesc();
