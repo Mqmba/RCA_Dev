@@ -94,22 +94,28 @@ public class AdminServices implements IAdminServices  {
     }
 
     public AdminTransactionResponseDTO getAdminTransaction() {
-        AdminTransactionResponseDTO adminTransactionResponseDTO = new AdminTransactionResponseDTO();
-        long totalTransaction = scheduleRepository.findAll().size();
-        long totalTransactionOngoing = scheduleRepository.findByAccepteAndOnGoing(Schedule.scheduleStatus.ACCEPTED);
-        long totalTransactionPending = scheduleRepository.findByStatus(Schedule.scheduleStatus.PENDING).size();
-        long totalTransactionFinished = scheduleRepository.findByStatus(Schedule.scheduleStatus.SUCCESS).size();
-        List<Schedule> top5ScheduleByCreatedAt = scheduleRepository.findTop5ByOrderByCreatedAtDesc();
+        try{
+            AdminTransactionResponseDTO adminTransactionResponseDTO = new AdminTransactionResponseDTO();
+            long totalTransaction = scheduleRepository.findAll().size();
+            long totalTransactionOngoing = scheduleRepository.findByAccepteAndOnGoing(Schedule.scheduleStatus.ACCEPTED);
+            long totalTransactionPending = scheduleRepository.findByStatus(Schedule.scheduleStatus.PENDING).size();
+            long totalTransactionFinished = scheduleRepository.findByStatus(Schedule.scheduleStatus.SUCCESS).size();
+            List<Schedule> top5ScheduleByCreatedAt = scheduleRepository.findTop5ByOrderByCreatedAtDesc();
 
 
-        adminTransactionResponseDTO.setNumberTransaction(totalTransaction);
-        adminTransactionResponseDTO.setNumberTransactionGoing(totalTransactionOngoing);
-        adminTransactionResponseDTO.setNumberTransactionPending(totalTransactionPending);
-        adminTransactionResponseDTO.setNumberTransactionSuccess(totalTransactionFinished);
-        adminTransactionResponseDTO.setTop5ScheduleByCreatedAt(top5ScheduleByCreatedAt);
+            adminTransactionResponseDTO.setNumberTransaction(totalTransaction);
+            adminTransactionResponseDTO.setNumberTransactionGoing(totalTransactionOngoing);
+            adminTransactionResponseDTO.setNumberTransactionPending(totalTransactionPending);
+            adminTransactionResponseDTO.setNumberTransactionSuccess(totalTransactionFinished);
+            adminTransactionResponseDTO.setTop5ScheduleByCreatedAt(top5ScheduleByCreatedAt);
 
 
-        return adminTransactionResponseDTO;
+            return adminTransactionResponseDTO;
+        }
+        catch (Exception e){
+            log.error("Error in AdminServices.getAdminTransaction: " + e.getMessage());
+            throw e;
+        }
     }
 
 }

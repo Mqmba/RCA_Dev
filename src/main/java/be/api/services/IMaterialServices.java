@@ -9,6 +9,6 @@ public interface IMaterialServices {
     public List<Material> getAllMaterials();
     public Material getMaterialById(int id);
     public Material addMaterial(MaterialRequestDTO material);
-    public Material updateMaterial(Material material);
-    public void deleteMaterial(int id);
+    public Material updateMaterial(Material dto);
+    public Boolean deleteMaterial(int id);
 }
