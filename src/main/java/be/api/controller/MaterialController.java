@@ -47,4 +47,29 @@ public class MaterialController {
         }
     }
 
+    @PutMapping("update-material")
+    public ResponseData<?> updateMaterial(@Valid @RequestBody Material dto) {
+        try{
+            Material material = materialServices.updateMaterial(dto);
+            return new ResponseData<>(HttpStatus.OK.value(), "Material updated successfully", material);
+        }
+        catch (ResourceNotFoundException e){
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
+    @DeleteMapping("delete-material/{id}")
+    public ResponseData<?> deleteMaterial(@PathVariable int id) {
+        try{
+            Boolean result = materialServices.deleteMaterial(id);
+            if(result){
+                return new ResponseData<>(HttpStatus.OK.value(), "Material deleted successfully", null);
+            }
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), "Material not found");
+        }
+        catch (ResourceNotFoundException e){
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
 }

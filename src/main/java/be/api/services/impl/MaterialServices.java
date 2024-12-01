@@ -37,12 +37,29 @@ public class MaterialServices implements IMaterialServices {
     }
 
     @Override
-    public Material updateMaterial(Material material) {
+    public Material updateMaterial(Material dto)
+    {
+        Material exitMaterial = materialRepository.findById(dto.getId()).orElse(null);
+
+        if(exitMaterial != null){
+            exitMaterial.setName(dto.getName());
+            exitMaterial.setDescription(dto.getDescription());
+            exitMaterial.setPrice(dto.getPrice());
+            materialRepository.save(exitMaterial);
+            log.info("Material updated successfully");
+            return exitMaterial;
+        }
         return null;
     }
 
     @Override
-    public void deleteMaterial(int id) {
-
+    public Boolean deleteMaterial(int id) {
+       try{
+           materialRepository.deleteById(id);
+           return true;
+       }
+       catch (Exception e){
+           return false;
+       }
     }
 }
