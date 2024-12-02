@@ -2,7 +2,9 @@ package be.api.services.impl;
 
 import be.api.dto.request.CDPaymentRequestDTO;
 import be.api.dto.request.CRPaymentRequestDTO;
+import be.api.dto.response.CDPaymentResponse;
 import be.api.dto.response.CRPaymentResponse;
+import be.api.dto.response.ResponseData;
 import be.api.model.*;
 import be.api.repository.*;
 import be.api.services.ICDPaymentServices;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +97,20 @@ public class CDPaymentServices implements ICDPaymentServices {
     @Override
     public CRPaymentResponse getCDPaymentById(Integer paymentId) {
         return null;
+    }
+
+    @Override
+    public List<CDPaymentResponse> getListPayment() {
+         List<CollectorDepotPayment> payments = cdPaymentRepository.findAll();
+         List<CDPaymentResponse> response = new ArrayList<>();
+         for (CollectorDepotPayment payment : payments) {
+                CDPaymentResponse cdPaymentResponse = new CDPaymentResponse();
+                cdPaymentResponse.setCollectorDepotPayment(payment);
+                CDPayment_Detail detail = crPaymentDetailRepository.findByCdPaymentId(payment.getCdPaymentId());
+                cdPaymentResponse.setCdPaymentDetail(detail);
+                response.add(cdPaymentResponse);
+         }
+         return response;
     }
 
     private double calculateAmountPoint(List<CRPaymentRequestDTO.MaterialDTO> materials) {

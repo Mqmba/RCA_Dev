@@ -76,13 +76,25 @@ public class RecyclingDepotController {
         return recyclingDepotService.updateWorkingDate(id);
     }
 
+    @PostMapping("/get-list-payment")
+    public ResponseData<?> getListPayment() {
+        try{
+            return new ResponseData<>(200, "List payment found", cdPaymentServices.getListPayment());
+        }
+        catch (Exception e){
+            return new ResponseData<>(500, "Internal server error while retrieving list payment with message: " + e.getMessage(), null);
+        }
+    }
+
     @GetMapping("/get-list-recycling-depot")
     public ResponseData<?> getListRecyclingDepot() {
-    try{
-        return new ResponseData<>(200, "List recycling depot found", recyclingDepotService.getListRecyclingDepots());
+        try{
+            return new ResponseData<>(200, "List recycling depot found", recyclingDepotService.getListRecyclingDepots());
+        }
+        catch (Exception e){
+            return new ResponseData<>(500, "Internal server error while retrieving list recycling depot with message: " + e.getMessage(), null);
+        }
     }
-    catch (Exception e){
-        return new ResponseData<>(500, "Internal server error while retrieving list recycling depot with message: " + e.getMessage(), null);
-    }
-    }
+
+
 }

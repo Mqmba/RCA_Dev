@@ -15,8 +15,8 @@ public class CollectorDepotPayment extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CollectorDepotPaymentId")
-
     private int cdPaymentId;
+
     @Column(name = "Amount")
     private double amount;
 
@@ -43,4 +43,5 @@ public class CollectorDepotPayment extends AbstractEntity {
     @JoinColumn(name = "RecyclingDepotId", referencedColumnName = "RecyclingDepotId")
     @JsonManagedReference
     private RecyclingDepot recyclingDepot;
+
 }
