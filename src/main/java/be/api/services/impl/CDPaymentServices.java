@@ -42,8 +42,6 @@ public class CDPaymentServices implements ICDPaymentServices {
         User user = userRepository.findByUsername(userName);
 
 
-
-
         payment.setMaterialType(dto.getMaterialType());
         payment.setCollector(userByUserId.get().getCollector());
         payment.setRecyclingDepot(user.getRecyclingDepot());
@@ -110,8 +108,8 @@ public class CDPaymentServices implements ICDPaymentServices {
          for (CollectorDepotPayment payment : payments) {
                 CDPaymentResponse cdPaymentResponse = new CDPaymentResponse();
                 cdPaymentResponse.setCollectorDepotPayment(payment);
-                CDPayment_Detail detail = crPaymentDetailRepository.findByCdPaymentId(payment.getCdPaymentId());
-                cdPaymentResponse.setCdPaymentDetail(detail);
+                List<CDPayment_Detail> listDetail = crPaymentDetailRepository.findByCdPaymentId(payment.getCdPaymentId());
+                cdPaymentResponse.setCdPaymentDetail(listDetail);
                 response.add(cdPaymentResponse);
          }
          return response;
