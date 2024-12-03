@@ -33,15 +33,19 @@ public class CDPaymentServices implements ICDPaymentServices {
     @Override
     public Integer createCDPayment(CDPaymentRequestDTO dto) {
         CollectorDepotPayment payment = new CollectorDepotPayment();
-        Collector collector = collectorRepository.findById(dto.getCollectorId())
-                .orElseThrow(() -> new IllegalArgumentException("Collector not found with ID: " + dto.getCollectorId()));
+
+        // doan nay phia client truyen collectorId nhung lai la user id :D
+        Optional<User> userByUserId = userRepository.findById(dto.getCollectorId());
 
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
 
+
+
+
         payment.setMaterialType(dto.getMaterialType());
-        payment.setCollector(collector);
+        payment.setCollector(userByUserId.get().getCollector());
         payment.setRecyclingDepot(user.getRecyclingDepot());
 
         payment.setAmount(calculateAmountPoint(dto.getMaterials()));
