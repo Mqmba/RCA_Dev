@@ -15,4 +15,5 @@ public interface IUserServices {
     void deleteUser(int id);
     List<UserRequestDTO> searchUsersByName(String name, int pageNo, int pageSize);
     User getUserByEmail(String email);
+    User getInfoUser();
 }

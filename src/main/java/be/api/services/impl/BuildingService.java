@@ -4,19 +4,23 @@ import be.api.model.Building;
 import be.api.repository.IBuildingRepository;
 import be.api.services.IBuildingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class BuildingService implements IBuildingService {
 
     private final IBuildingRepository buildingRepository;
+
     @Override
     @Transactional
     public Building createBuilding(Building building) {
@@ -39,7 +43,7 @@ public class BuildingService implements IBuildingService {
     }
 
     @Override
-    public Page<Building> getAllBuildings(Pageable pageable) {
-        return buildingRepository.findAll(pageable);
+    public List<Building> getAllBuildings() {
+        return buildingRepository.findAll();
     }
 }
