@@ -1,6 +1,7 @@
 package be.api.services;
 
 import be.api.dto.request.ScheduleDTO;
+import be.api.dto.response.ScheduleResponseDTO;
 import be.api.model.Schedule;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ public interface IScheduleService {
     Page<Schedule> getUserSchedules(Integer userId, Pageable pageable);
     List<Schedule> getUserSchedules(Integer userId,Schedule.scheduleStatus status);
     List<Schedule> getUserSchedules(Integer userId);
-    Schedule getScheduleById(Integer id);
+    ScheduleResponseDTO getScheduleById(Integer id);
 
     @Query("SELECT s FROM Schedule s WHERE s.residentId = :residentId AND s.status = :status")
     List<Schedule> getScheduleOfResidentByUserIdAndStatus(Integer residentId, Schedule.scheduleStatus status);
