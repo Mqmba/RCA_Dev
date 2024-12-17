@@ -5,7 +5,10 @@ import be.api.dto.response.ResponseData;
 import be.api.dto.request.UserRequestDTO;
 import be.api.exception.ResourceNotFoundException;
 import be.api.model.User;
+import be.api.services.impl.PointServices;
+import be.api.services.impl.ResidentServices;
 import be.api.services.impl.UserServices;
+import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +23,9 @@ import java.util.List;
 public class UserController {
 
     private final UserServices userServices;
+    private final PointServices pointServices;
+    private final ResidentServices residentServices;
+
 
     @PostMapping("add")
     public ResponseData<?> addUser(@Valid @RequestBody UserRequestDTO userDTO) {
@@ -89,4 +95,42 @@ public class UserController {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
+
+    @GetMapping("get-info-user")
+    public ResponseData<User> getInfoUser() {
+        try {
+            return new ResponseData<>(HttpStatus.OK.value(), "User found", userServices.getInfoUser());
+        } catch (ResourceNotFoundException e) {
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-point-by-user")
+    public ResponseData<?> getPointByUser() {
+        try {
+            return new ResponseData<>(200, "Success", pointServices.getPoints());
+        } catch (Exception e) {
+            return new ResponseData<>(500, "An unexpected error occurred", null);
+        }
+    }
+
+    @GetMapping("/change-point-to-voucher")
+    public ResponseData<?> changePointToVoucher(@RequestParam int voucherId) {
+        try {
+            return new ResponseData<>(200, "Success", residentServices.changePointToVoucher(voucherId));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-list-voucher-by-user")
+    public ResponseData<?> getListVoucherByUser() {
+        try {
+            return new ResponseData<>(200, "Success", residentServices.getListVoucherByResidentId());
+        } catch (Exception e) {
+            return new ResponseData<>(500, "An unexpected error occurred", null);
+        }
+    }
+
+
 }

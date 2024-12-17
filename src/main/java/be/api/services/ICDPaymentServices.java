@@ -18,5 +18,4 @@ public interface ICDPaymentServices {
 
     List<CDPaymentResponse> getListPayment();
 
-
 }

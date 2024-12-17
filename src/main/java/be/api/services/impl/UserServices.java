@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -103,4 +104,16 @@ public class UserServices implements IUserServices {
         }
         return user;
     }
+
+    @Override
+    public User getInfoUser() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found with username: " + userName);
+        }
+        return user;
+    }
+
+    
 }

@@ -3,6 +3,7 @@ package be.api.controller;
 import be.api.dto.request.ScheduleDTO;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
+import be.api.dto.response.ScheduleResponseDTO;
 import be.api.exception.ResourceNotFoundException;
 import be.api.model.Schedule;
 import be.api.model.User;
@@ -32,15 +33,6 @@ public class ScheduleController {
     private final JwtTokenUtil jwtTokenUtil;
     private final CollectorServices collectorServices;
 
-    @GetMapping("/get-list-collection-schedule-by-paging")
-    public ResponseEntity<Page<Schedule>> getAllSchedules(Pageable pageable) {
-        return ResponseEntity.ok(scheduleService.getAllSchedules(pageable));
-    }
-
-    @GetMapping("/get-list-active-collection-schedule-by-paging")
-    public ResponseEntity<Page<Schedule>> getActiveSchedules(Pageable pageable) {
-        return ResponseEntity.ok(scheduleService.getActiveSchedules(pageable));
-    }
 
     @PostMapping("/create-collection-schedule")
     public ResponseData<?> createSchedule(HttpServletRequest request, @RequestBody ScheduleDTO scheduleDto) {
@@ -135,9 +127,9 @@ public class ScheduleController {
 
 
     @GetMapping("/get-schedule-by-id")
-    public ResponseData<Schedule> getScheduleById(@RequestParam Integer id) {
+    public ResponseData<ScheduleResponseDTO> getScheduleById(@RequestParam Integer id) {
         try {
-            Schedule schedule = scheduleService.getScheduleById(id);
+            ScheduleResponseDTO schedule = scheduleService.getScheduleById(id);
             return new ResponseData<>(HttpStatus.OK.value(), "Get schedule successful", schedule);
         } catch (ResourceNotFoundException e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
