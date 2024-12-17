@@ -1,6 +1,5 @@
 package be.api.services.impl;
 
-import be.api.config.VnPayConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -14,20 +13,18 @@ import java.util.*;
 @Service
 public class VnPayService {
 
-    private final VnPayConfig vnPayConfig;
     private final PaymentHistoryServices paymentHistoryServices;
 
-    public VnPayService(VnPayConfig vnPayConfig, PaymentHistoryServices paymentHistoryServices) {
-        this.vnPayConfig = vnPayConfig;
+    public VnPayService(PaymentHistoryServices paymentHistoryServices) {
         this.paymentHistoryServices = paymentHistoryServices;
     }
 
     public String createPaymentUrl(int numberPoint) {
         try {
-            String vnp_Version = vnPayConfig.getVersion();
-            String vnp_Command = vnPayConfig.getCommand();
-            String vnp_TmnCode = vnPayConfig.getTmnCode();
-            String vnp_ReturnUrl = vnPayConfig.getReturnUrl();
+            String vnp_Version = "2.1.0";
+            String vnp_Command = "pay";
+            String vnp_TmnCode = "Q0QOWMPZ";
+            String vnp_ReturnUrl = "https://clownfish-app-wvth5.ondigitalocean.app/payment/return";
             String vnp_TxnRef = String.valueOf(System.currentTimeMillis()).substring(7);
             String vnp_OrderInfo = "Thanh toán đơn hàng: " + vnp_TxnRef;
             String orderType = "other";
@@ -76,7 +73,7 @@ public class VnPayService {
                 }
             }
             String queryUrl = query.toString();
-            String vnp_SecureHashType =  hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
+            String vnp_SecureHashType =  hmacSHA512("GOWK4U7TNXWI21Y20FZGUZN15NOD64PM", hashData.toString());
 
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHashType;
 
@@ -85,7 +82,7 @@ public class VnPayService {
 
 
 
-            return vnPayConfig.getPayUrl() + "?" + queryUrl;
+            return "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html" + "?" + queryUrl;
         } catch (Exception e) {
             e.printStackTrace();
         }

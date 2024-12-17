@@ -1,6 +1,5 @@
 package be.api.controller;
 
-import be.api.config.VnPayConfig;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
 import be.api.model.Payment_History;
@@ -19,15 +18,13 @@ import java.util.*;
 public class PaymentController {
 
     private final VnPayService vnPayService;
-    private final VnPayConfig vnPayConfig;
     private final PaymentHistoryServices paymentHistoryServices;
 
 
 
-    public PaymentController(VnPayService vnPayService, VnPayConfig vnPayConfig, PaymentHistoryServices
+    public PaymentController(VnPayService vnPayService, PaymentHistoryServices
                               paymentHistoryServices) {
         this.vnPayService = vnPayService;
-        this.vnPayConfig = vnPayConfig;
 
         this.paymentHistoryServices = paymentHistoryServices;
     }
