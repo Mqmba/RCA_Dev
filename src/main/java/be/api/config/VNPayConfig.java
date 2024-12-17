@@ -1,13 +1,13 @@
 package be.api.config;
 
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@Data
-public class VNPayConfig {
-
+@Getter
+public class VnPayConfig {
     @Value("${vnpay.tmn-code}")
     private String tmnCode;
 
