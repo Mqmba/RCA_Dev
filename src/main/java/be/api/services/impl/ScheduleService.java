@@ -1,7 +1,6 @@
 package be.api.services.impl;
 
 import be.api.dto.request.ScheduleDTO;
-import be.api.dto.response.ScheduleResponseDTO;
 import be.api.model.*;
 import be.api.repository.*;
 import be.api.services.IScheduleService;
@@ -129,10 +128,9 @@ public class ScheduleService implements IScheduleService {
 
 
     @Override
-    public ScheduleResponseDTO getScheduleById(Integer id) {
-        Schedule schedule = scheduleRepository.findById(id)
+    public Schedule getScheduleById(Integer id) {
+        return scheduleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + id));
-        return modelMapper.map(schedule, ScheduleResponseDTO.class);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package be.api.services.impl;
 
 import be.api.dto.response.ScheduleResponseDTO;
-import be.api.exception.ResourceNotFoundException;
 import be.api.model.Collector;
 import be.api.model.Resident;
 import be.api.model.Schedule;
@@ -66,12 +65,12 @@ public class CollectorServices implements ICollectorServices {
         User user = userRepository.findByUsername(userName);
 
         List<Schedule> schedule = scheduleService.getUserSchedules(user.getUserId());
-        if (schedule.size() >= 3) {
-            throw new ResourceNotFoundException("Schedule exceeds limit of 3");
-        }
+//        if (schedule.size() >= 5) {
+//            throw new IllegalArgumentException("Schedule exceeds limit");
+//        }
 
         Schedule existingSchedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
 
         existingSchedule.setStatus(Schedule.scheduleStatus.ACCEPTED);
         existingSchedule.setCollector(user.getCollector());

@@ -17,16 +17,16 @@ public class Apartment extends AbstractEntity {
     @Column(name = "ApartmentId")
     private int apartmentId;
 
-    @Column(name = "ApartmentNumber")
+    @Column(name = "ApartmentNumber", nullable = false, unique = true)
     private String apartmentNumber;
 
     @Column(name = "Floor", nullable = false)
     private int floor;
 
-    @Column(name = "ResidentCode")
+    @Column(name = "ResidentCode", nullable = false, unique = true)
     private String residentCode;
 
-    @Column(name = "PhoneNumber")
+    @Column(name = "PhoneNumber", nullable = false, unique = true)
     private String phoneNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +34,7 @@ public class Apartment extends AbstractEntity {
     @JsonBackReference
     private Building building;
 
-    @OneToOne(mappedBy = "apartment")
+    @OneToOne(mappedBy = "apartment", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @JsonBackReference
     private Resident resident;
 }

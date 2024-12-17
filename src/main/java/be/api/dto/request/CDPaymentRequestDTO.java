@@ -17,6 +17,8 @@ public class CDPaymentRequestDTO implements Serializable {
     @NotNull(message = "CollectorId is required")
     public int collectorId;
 
+ 
+
 
     @NotNull(message = "TotalPrice is required")
     public String materialType;

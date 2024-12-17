@@ -4,8 +4,6 @@ import be.api.dto.request.ApartmentRequestDTO;
 import be.api.model.Apartment;
 import be.api.repository.IApartmentRepository;
 import be.api.services.IApartmentServices;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,15 +11,15 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 @Service
-@Slf4j
-@RequiredArgsConstructor
 public class ApartmentService implements IApartmentServices {
 
     private static final Logger logger = LoggerFactory.getLogger(ApartmentService.class);
     private final IApartmentRepository apartmentRepository;
+
+    public ApartmentService(IApartmentRepository apartmentRepository) {
+        this.apartmentRepository = apartmentRepository;
+    }
 
     @Override
     public Apartment createApartment(ApartmentRequestDTO apartmentDTO) {
@@ -61,14 +59,13 @@ public class ApartmentService implements IApartmentServices {
     }
 
     @Override
-    public List<Apartment> getAllApartments() {
+    public Page<Apartment> getAllApartments(int page, int size) {
         try {
-            List<Apartment> apartments =  apartmentRepository.findAll();
-            return apartments;
+            Pageable pageable = PageRequest.of(page, size);
+            return apartmentRepository.findAll(pageable);
         } catch (Exception e) {
             logger.error("Error while retrieving apartments: {}", e.getMessage());
-            return null;
+            return Page.empty();
         }
     }
-
 }

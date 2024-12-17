@@ -9,5 +9,5 @@ import java.util.List;
 public interface IApartmentServices {
     Apartment createApartment(ApartmentRequestDTO apartment);
     Apartment updateApartment(ApartmentRequestDTO apartment);
-    List<Apartment> getAllApartments();
+    Page<Apartment> getAllApartments(int page, int size);
 }

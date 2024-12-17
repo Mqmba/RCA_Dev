@@ -1,7 +1,6 @@
 package be.api.controller;
 
 import be.api.dto.request.ApartmentRequestDTO;
-import be.api.dto.response.ResponseData;
 import be.api.model.Apartment;
 import be.api.services.impl.ApartmentService;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +39,13 @@ public class ApartmentController {
         }
     }
 
-    @GetMapping("/get-list-apartment")
-    public ResponseData<?> getApartments() {
+    @GetMapping("/get-list-apartment-by-paging")
+    public ResponseEntity<?> getApartments(@RequestParam int page, @RequestParam int size) {
         try {
-            return new ResponseData<>(200, "List of apartments found", apartmentService.getAllApartments());
+            return ResponseEntity.ok(apartmentService.getAllApartments(page, size));
         } catch (Exception e) {
             logger.error("Error while retrieving apartments: {}", e.getMessage());
-            return new ResponseData<>(500, "Internal server error while retrieving list of apartments with message: " + e.getMessage(), null);
+            return ResponseEntity.status(500).body("Failed to get apartments: " + e.getMessage());
         }
     }
 }

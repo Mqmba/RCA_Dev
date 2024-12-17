@@ -4,6 +4,7 @@ import be.api.dto.request.*;
 import be.api.dto.response.AuthResponseDTO;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
+import be.api.dto.response.UserResponseDTO;
 import be.api.exception.ResourceConflictException; // Custom exception for conflict scenarios
 import be.api.model.*;
 import be.api.repository.*;
@@ -19,11 +20,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -148,75 +149,129 @@ public class AuthService {
         }
     }
 
+    public UserResponseDTO registerResident(ResidentRegistrationDTO residentDto) {
+        try {
+            validateResidentDetails(residentDto.getEmail(), residentDto.getUsername(), residentDto.getPhoneNumber(), residentDto.getResidentCode());
 
-    public User registerResident(ResidentRegisterRequestDTO dto) {
-        validateUserDetails(dto.getEmail(), dto.getUsername(), dto.getPhoneNumber());
-        User user = createUser(dto, User.UserRole.ROLE_RESIDENT);
-        Resident resident = new Resident();
-        resident.setUser(user);
-        resident.setRewardPoints(0);
-        Optional<Apartment> apartment = apartmentRepository.findById(dto.getApartmentId());
-        resident.setApartment(apartment.get());
-        residentRepository.save(resident);
+            // Validate apartment by checking the residentCode and phoneNumber
+            Apartment apartment = apartmentRepository.findByResidentCodeAndPhoneNumber(
+                    residentDto.getResidentCode(),
+                    residentDto.getPhoneNumber()
+            );
 
-        return user;
+            // If apartment is not found, throw an exception
+            if (apartment == null) {
+                throw new ResourceConflictException("Invalid resident code or phone number.");
+            }
+
+            User user = createUser(
+                    residentDto.getUsername(),
+                    residentDto.getPassword(),
+                    residentDto.getEmail(),
+                    residentDto.getFirstName(),
+                    residentDto.getLastName(),
+                    residentDto.getPhoneNumber(),
+                    User.UserRole.ROLE_RESIDENT
+            );
+
+            Resident resident = Resident.builder()
+                    .user(user)
+                    .rewardPoints(0)
+                    .apartment(apartment)
+                    .build();
+
+            residentRepository.save(resident);
+
+            return mapToUserResponseDTO(user);
+        } catch (Exception e) {
+            logger.error("Error registering resident: {}", e.getMessage());
+            throw e;
+        }
     }
 
-    public User registerCollector (ResidentRegisterRequestDTO dto) {
-        validateUserDetails(dto.getEmail(), dto.getUsername(), dto.getPhoneNumber());
-        User user = createUser(dto, User.UserRole.ROLE_COLLECTOR);
-        Collector collector = new Collector();
-        collector.setUser(user);
-        collector.setRate(0);
-        collector.setNumberPoint(0);
-        collector.setBalance(0.0);
-        collectorRepository.save(collector);
-        return user;
+    public UserResponseDTO registerCollector(CollectorRegistrationDTO collectorDto) {
+        try {
+            validateUserDetails(collectorDto.getEmail(), collectorDto.getUsername(), collectorDto.getPhoneNumber());
+
+            User user = createUser(
+                    collectorDto.getUsername(),
+                    collectorDto.getPassword(),
+                    collectorDto.getEmail(),
+                    collectorDto.getFirstName(),
+                    collectorDto.getLastName(),
+                    collectorDto.getPhoneNumber(),
+                    User.UserRole.ROLE_COLLECTOR
+            );
+
+            Collector collector = Collector.builder()
+                    .user(user)
+                    .rate(0)
+                    .numberPoint(0)
+                    .isWorking(true)
+                    .build();
+
+            collectorRepository.save(collector);
+
+            return mapToUserResponseDTO(user);
+        } catch (Exception e) {
+            logger.error("Error registering collector: {}", e.getMessage());
+            throw e;
+        }
     }
 
-    public User registerDepot (RegisterDepotRequestDTO dto){
-     try{
-         validateUserDetails(dto.getEmail(), dto.getUsername(), dto.getPhoneNumber());
-         User user  = User.builder()  // Changed to use builder pattern
-                 .username(dto.getUsername())
-                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
-                 .email(dto.getEmail())
-                 .firstName(dto.getFirstName())
-                 .lastName(dto.getLastName())
-                 .address(dto.getAddress())
-                 .phoneNumber(dto.getPhoneNumber())
-                 .role(User.UserRole.ROLE_RECYCLING_DEPOT)
-                 .emailConfirmed(true)
-                 .isActive(true)
-                 .build();
-         User usernew =  userRepository.save(user);
+    public UserResponseDTO registerRecyclingDepot(RecyclingDepotRegistrationDTO recyclingDepotDto) {
+        try {
+            validateUserDetails(recyclingDepotDto.getEmail(), recyclingDepotDto.getUsername(), recyclingDepotDto.getPhoneNumber());
 
-         RecyclingDepot recyclingDepot = new RecyclingDepot();
-         recyclingDepot.setUser(usernew);
-         recyclingDepot.setDepotName(dto.getDepotName());
-         recyclingDepot.setLocation(dto.getLocation());
-         recyclingDepot.setIsWorking(true);
-         recyclingDepot.setLatitude(dto.getLatitude());
-         recyclingDepot.setLongitude(dto.getLongitude());
-         recyclingDepot.setBalance(0.0);
-         recyclingDepotRepository.save(recyclingDepot);
-         return user;
-     } catch (Exception e) {
-         throw new RuntimeException(e);
-     }
+            User user = createUser(
+                    recyclingDepotDto.getUsername(),
+                    recyclingDepotDto.getPassword(),
+                    recyclingDepotDto.getEmail(),
+                    recyclingDepotDto.getFirstName(),
+                    recyclingDepotDto.getLastName(),
+                    recyclingDepotDto.getPhoneNumber(),
+                    User.UserRole.ROLE_RECYCLING_DEPOT
+            );
+
+            RecyclingDepot recyclingDepot = RecyclingDepot.builder()
+                    .user(user)
+                    .depotName(recyclingDepotDto.getDepotName())
+                    .location(recyclingDepotDto.getLocation())
+                    .isWorking(true)
+                    .build();
+
+
+            recyclingDepotRepository.save(recyclingDepot);
+
+            return mapToUserResponseDTO(user);
+        } catch (Exception e) {
+            logger.error("Error registering recycling depot: {}", e.getMessage());
+            throw e;
+        }
     }
 
 
+    private UserResponseDTO mapToUserResponseDTO(User user) {
+        UserResponseDTO userResponse = new UserResponseDTO();
+        userResponse.setUsername(user.getUsername());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setPhoneNumber(user.getPhoneNumber());
+        userResponse.setFirstName(user.getFirstName());
+        userResponse.setLastName(user.getLastName());
+        userResponse.setRole(user.getRole().name());
+        return userResponse;
+    }
 
-    private User createUser(ResidentRegisterRequestDTO dto, User.UserRole role) {
+    private User createUser(String username, String password, String email,
+                            String firstName, String lastName, String phoneNumber,
+                            User.UserRole role) {
         User user = User.builder()  // Changed to use builder pattern
-                .username(dto.getUsername())
-                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
-                .email(dto.getEmail())
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .address(dto.getAddress())
-                .phoneNumber(dto.getPhoneNumber())
+                .username(username)
+                .password(bCryptPasswordEncoder.encode(password))
+                .email(email)
+                .firstName(firstName)
+                .lastName(lastName)
+                .phoneNumber(phoneNumber)
                 .role(role)
                 .emailConfirmed(true)
                 .isActive(true)

@@ -34,7 +34,6 @@ public class RecyclingDepotController {
         }
     }
 
-
     @PostMapping("/create-recycling-depot")
     public ResponseData<?> createRecyclingDepot(@RequestBody CreateDepotRequestDTO dto) {
         try{
@@ -91,26 +90,6 @@ public class RecyclingDepotController {
     public ResponseData<?> getListRecyclingDepot() {
         try{
             return new ResponseData<>(200, "List recycling depot found", recyclingDepotService.getListRecyclingDepots());
-        }
-        catch (Exception e){
-            return new ResponseData<>(500, "Internal server error while retrieving list recycling depot with message: " + e.getMessage(), null);
-        }
-    }
-
-    @GetMapping("/get-recycling-depot-by-id")
-    public ResponseData<?> getRecyclingDepotById(@RequestParam int id) {
-        try{
-            return new ResponseData<>(200, "Recycling depot found", recyclingDepotService.getRecyclingDepotById(id));
-        }
-        catch (Exception e){
-            return new ResponseData<>(500, "Internal server error while retrieving recycling depot with message: " + e.getMessage(), null);
-        }
-    }
-
-    @GetMapping("/check-missing-material")
-    public ResponseData<?> checkMissingMaterial() {
-        try{
-            return new ResponseData<>(200, "List recycling depot found", recyclingDepotService.checkIsMissingMaterial());
         }
         catch (Exception e){
             return new ResponseData<>(500, "Internal server error while retrieving list recycling depot with message: " + e.getMessage(), null);

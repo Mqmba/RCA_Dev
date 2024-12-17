@@ -1,8 +1,6 @@
 package be.api.services;
 
 import be.api.dto.request.CreateDepotRequestDTO;
-import be.api.dto.response.RecyclingDepotResponse;
-import be.api.model.Material;
 import be.api.model.RecyclingDepot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +15,4 @@ public interface IRecyclingDepotService {
     RecyclingDepot updateWorkingDate(int id);
 
     List<RecyclingDepot> getListRecyclingDepots();
-    RecyclingDepotResponse getRecyclingDepotById(int id);
-
-    List<Material> checkIsMissingMaterial();
 }

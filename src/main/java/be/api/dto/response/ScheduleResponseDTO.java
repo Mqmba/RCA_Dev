@@ -6,14 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScheduleResponseDTO  implements Serializable {
+public class ScheduleResponseDTO {
     private int scheduleId;
     private String materialType;
     private String status;
@@ -24,4 +23,5 @@ public class ScheduleResponseDTO  implements Serializable {
     private Date scheduleDate;
     private Date createdAt;
     private Date updatedAt;
+
 }

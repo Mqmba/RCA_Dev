@@ -28,33 +28,23 @@ public class CDPaymentServices implements ICDPaymentServices {
     private final IRecyclingDepotRepository recyclingDepotRepository;
     private final ICDPaymentDetailRepository crPaymentDetailRepository;
     private final IUserRepository userRepository;
-    private final IDepotMaterialRepository depotMaterialRepository;
+
 
     @Override
     public Integer createCDPayment(CDPaymentRequestDTO dto) {
         CollectorDepotPayment payment = new CollectorDepotPayment();
+        Collector collector = collectorRepository.findById(dto.getCollectorId())
+                .orElseThrow(() -> new IllegalArgumentException("Collector not found with ID: " + dto.getCollectorId()));
 
-        // doan nay phia client truyen collectorId nhung lai la user id :D
-        Optional<User> userByUserId = userRepository.findById(dto.getCollectorId());
-        Collector collector = userByUserId.get().getCollector();
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
-
 
         payment.setMaterialType(dto.getMaterialType());
         payment.setCollector(collector);
         payment.setRecyclingDepot(user.getRecyclingDepot());
 
-//        payment.setAmount(calculateAmountPoint(dto.getMaterials()));
-        double amountFromDepot = 0;
-        for (CRPaymentRequestDTO.MaterialDTO material : dto.getMaterials()) {
-            double priceFromDepot = depotMaterialRepository
-                    .findByMaterialIdAndRecyclingDepotId(material.getMaterialId(), user.getRecyclingDepot().getId())
-                    .getPrice();
-            amountFromDepot += priceFromDepot * material.getQuantity();
-        }
-        payment.setAmount(amountFromDepot);
+        payment.setAmount(calculateAmountPoint(dto.getMaterials()));
 
 
         CollectorDepotPayment savedPayment = cdPaymentRepository.save(payment);
@@ -116,8 +106,8 @@ public class CDPaymentServices implements ICDPaymentServices {
          for (CollectorDepotPayment payment : payments) {
                 CDPaymentResponse cdPaymentResponse = new CDPaymentResponse();
                 cdPaymentResponse.setCollectorDepotPayment(payment);
-                List<CDPayment_Detail> listDetail = crPaymentDetailRepository.findByCdPaymentId(payment.getCdPaymentId());
-                cdPaymentResponse.setCdPaymentDetail(listDetail);
+                CDPayment_Detail detail = crPaymentDetailRepository.findByCdPaymentId(payment.getCdPaymentId());
+                cdPaymentResponse.setCdPaymentDetail(detail);
                 response.add(cdPaymentResponse);
          }
          return response;

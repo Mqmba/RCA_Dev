@@ -3,6 +3,7 @@ package be.api.controller;
 import be.api.dto.request.*;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
+import be.api.dto.response.UserResponseDTO;
 import be.api.exception.ResourceConflictException;
 import be.api.services.impl.AuthService;
 import be.api.security.CustomUserDetailsService;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,45 +84,41 @@ public class AuthController {
         return authService.logout(authorizationHeader);
     }
 
-    @PostMapping("/register-resident")
-    public ResponseData<?> register(@RequestBody ResidentRegisterRequestDTO request) {
+    @PostMapping("/register/resident")
+    public ResponseData<?> registerResident(@Valid @RequestBody ResidentRegistrationDTO residentDto) {
         try {
-            logger.info("Attempting to register user: {}", request.getUsername());
-            return new ResponseData<>(HttpStatus.CREATED.value(), "User registered successfully", authService.registerResident(request));
+            UserResponseDTO userResponse = authService.registerResident(residentDto);
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Resident registration successful", userResponse);
         } catch (ResourceConflictException e) {
-            logger.error("Registration error: {}", e.getMessage());
             return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Resident registration failed");
         }
     }
 
-    @PostMapping("/register-collector")
-    public ResponseData<?> registerCollector(@RequestBody ResidentRegisterRequestDTO request) {
+    @PostMapping("/register/collector")
+    public ResponseData<?> registerCollector(@Valid @RequestBody CollectorRegistrationDTO collectorDto) {
         try {
-            logger.info("Attempting to register user: {}", request.getUsername());
-            return new ResponseData<>(HttpStatus.CREATED.value(), "User registered successfully", authService.registerCollector(request));
+            UserResponseDTO userResponse = authService.registerCollector(collectorDto);
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Collector registration successful", userResponse);
         } catch (ResourceConflictException e) {
-            logger.error("Registration error: {}", e.getMessage());
             return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Collector registration failed");
         }
     }
 
-    @PostMapping("/register-depot")
-    public ResponseData<?> registerCollector(@RequestBody RegisterDepotRequestDTO request) {
+    @PostMapping("/register/recycling-depot")
+    public ResponseData<?> registerRecyclingDepot(@Valid @RequestBody RecyclingDepotRegistrationDTO recyclingDepotDto) {
         try {
-            logger.info("Attempting to register user: {}", request.getUsername());
-            return new ResponseData<>(HttpStatus.CREATED.value(), "User registered successfully", authService.registerDepot(request));
+            UserResponseDTO userResponse = authService.registerRecyclingDepot(recyclingDepotDto);
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Recycling depot registration successful", userResponse);
         } catch (ResourceConflictException e) {
-            logger.error("Registration error: {}", e.getMessage());
             return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Recycling depot registration failed");
         }
     }
-
-
-
-
-
-
-
 
 
 

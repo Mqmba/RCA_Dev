@@ -61,12 +61,7 @@ public class PointServices implements IPointServices {
             } else if(user.getRole() == User.UserRole.ROLE_RESIDENT) {
                 return user.getResident().getRewardPoints();
             }
-            else if(user.getRole() == User.UserRole.ROLE_RECYCLING_DEPOT){
-                return user.getRecyclingDepot().getBalance();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve points", e);
-        }
+        } catch (Exception e) {}
         return 0;
     }
 
