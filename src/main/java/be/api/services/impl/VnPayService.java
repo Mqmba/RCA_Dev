@@ -1,6 +1,6 @@
 package be.api.services.impl;
 
-import be.api.config.VnPayConfig;
+import be.api.config.VNPayConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +14,10 @@ import java.util.*;
 @Service
 public class VnPayService {
 
-    private final VnPayConfig vnPayConfig;
+    private final VNPayConfig vnPayConfig;
     private final PaymentHistoryServices paymentHistoryServices;
 
-    public VnPayService(VnPayConfig vnPayConfig, PaymentHistoryServices paymentHistoryServices) {
+    public VnPayService(VNPayConfig vnPayConfig, PaymentHistoryServices paymentHistoryServices) {
         this.vnPayConfig = vnPayConfig;
         this.paymentHistoryServices = paymentHistoryServices;
     }

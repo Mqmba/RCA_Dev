@@ -1,6 +1,6 @@
 package be.api.controller;
 
-import be.api.config.VnPayConfig;
+import be.api.config.VNPayConfig;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
 import be.api.model.Payment_History;
@@ -8,7 +8,6 @@ import be.api.services.impl.PaymentHistoryServices;
 import be.api.services.impl.VnPayService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -20,12 +19,12 @@ import java.util.*;
 public class PaymentController {
 
     private final VnPayService vnPayService;
-    private final VnPayConfig vnPayConfig;
+    private final VNPayConfig vnPayConfig;
     private final PaymentHistoryServices paymentHistoryServices;
 
 
 
-    public PaymentController(VnPayService vnPayService, VnPayConfig vnPayConfig, PaymentHistoryServices
+    public PaymentController(VnPayService vnPayService, VNPayConfig vnPayConfig, PaymentHistoryServices
                               paymentHistoryServices) {
         this.vnPayService = vnPayService;
         this.vnPayConfig = vnPayConfig;

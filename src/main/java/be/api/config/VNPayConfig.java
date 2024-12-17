@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-public class VnPayConfig {
+public class VNPayConfig {
 
     @Value("${vnpay.tmn-code}")
     private String tmnCode;
