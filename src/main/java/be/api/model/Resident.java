@@ -23,7 +23,7 @@ public class Resident extends AbstractEntity {
     @JoinColumn(name = "UserId", nullable = false, referencedColumnName = "userId")
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "ApartmentId", nullable = false, referencedColumnName = "ApartmentId")
     private Apartment apartment;
 

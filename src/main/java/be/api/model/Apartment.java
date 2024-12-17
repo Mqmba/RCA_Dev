@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -34,7 +36,7 @@ public class Apartment extends AbstractEntity {
     @JsonBackReference
     private Building building;
 
-    @OneToOne(mappedBy = "apartment")
+    @OneToMany(mappedBy = "apartment")
     @JsonBackReference
-    private Resident resident;
+    private List<Resident> resident;
 }
