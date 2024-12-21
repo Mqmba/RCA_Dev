@@ -4,6 +4,7 @@ import be.api.dto.request.ScheduleDTO;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
 import be.api.dto.response.ScheduleResponseDTO;
+import be.api.exception.BadRequestException;
 import be.api.exception.ResourceNotFoundException;
 import be.api.model.Schedule;
 import be.api.model.User;
@@ -44,9 +45,9 @@ public class ScheduleController {
                 System.out.println("User ID: " + tokenInfo.get("id"));
                 int userId = (int) tokenInfo.get("id");
                 Schedule schedule = scheduleService.createSchedule(scheduleDto, userId);
-                return new ResponseData<>(HttpStatus.CREATED.value(), "Create Successful");
+                return new ResponseData<>(HttpStatus.CREATED.value(), "Tạo thành công");
             } else {
-                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Authorization header is missing or invalid");
+                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Authorization không hợp lệ");
             }
         } catch (ResourceNotFoundException e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
@@ -76,13 +77,13 @@ public class ScheduleController {
                 int userId = (int) tokenInfo.get("id");
                 List<Schedule> data = scheduleService.getScheduleOfResidentByUserIdAndStatus(userId, status);
 
-                return new ResponseData<>(HttpStatus.CREATED.value(), "Get schedule successful", data);
+                return new ResponseData<>(HttpStatus.CREATED.value(), "Lấy thành công", data);
             } else {
-                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Authorization header is missing or invalid");
+                throw new BadRequestException("Authorization header is missing or invalid");
             }
 
         } catch (ResourceNotFoundException e) {
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+           throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -94,7 +95,7 @@ public class ScheduleController {
         try{
 
             if (!sortOrder.equalsIgnoreCase("ASC") && !sortOrder.equalsIgnoreCase("DESC")) {
-                return new ResponseData<>(400, "Invalid sortOrder parameter. Use 'ASC' or 'DESC'.", null);
+               throw new BadRequestException("Invalid sortOrder parameter. Use 'ASC' or 'DESC'.");
             }
 
             List<Schedule> schedules;
@@ -116,11 +117,11 @@ public class ScheduleController {
 
             return new ResponseData<>(
                     200,
-                    "Successfully retrieved list collector",
+                    "Lấy danh sách thành công",
                     schedules);
         }
         catch (ResourceNotFoundException e){
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -132,7 +133,7 @@ public class ScheduleController {
             ScheduleResponseDTO schedule = scheduleService.getScheduleById(id);
             return new ResponseData<>(HttpStatus.OK.value(), "Get schedule successful", schedule);
         } catch (ResourceNotFoundException e) {
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            throw new BadRequestException(e.getMessage());
         }
     }
 }

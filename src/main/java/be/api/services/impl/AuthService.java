@@ -4,6 +4,7 @@ import be.api.dto.request.*;
 import be.api.dto.response.AuthResponseDTO;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
+import be.api.exception.BadRequestException;
 import be.api.exception.ResourceConflictException; // Custom exception for conflict scenarios
 import be.api.model.*;
 import be.api.repository.*;
@@ -47,7 +48,7 @@ public class AuthService {
         try {
             if (request.getUsername() == null || request.getPassword() == null ||
                     request.getUsername().isEmpty() || request.getPassword().isEmpty()) {
-                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Username and password must not be null or empty.");
+                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Không được để trống tên đăng nhập hoặc mật khẩu.");
             }
 
             Authentication authentication = authenticationManager.authenticate(
@@ -64,12 +65,12 @@ public class AuthService {
                     .collect(Collectors.toList());
 
             return new ResponseData<>(HttpStatus.OK.value(),
-                    "Authentication successful",
+                    "Đăng nhập thành công",
                     new AuthResponseDTO(token, roles)
             );
         } catch (BadCredentialsException e) {
             logger.warn("Authentication error: Invalid username or password");
-            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Invalid username or password");
+            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Tên đăng nhập hoặc mật khẩu không đúng");
         }
     }
 
@@ -78,7 +79,7 @@ public class AuthService {
         try {
             if (request.getUsername() == null || request.getPassword() == null ||
                     request.getUsername().isEmpty() || request.getPassword().isEmpty()) {
-                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Username and password must not be null or empty.");
+                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Không được để trống tên đăng nhập hoặc mật khẩu.");
             }
 
             Authentication authentication = authenticationManager.authenticate(
@@ -96,15 +97,15 @@ public class AuthService {
 
             if (roles.contains("ROLE_ADMIN")) {
                 return new ResponseData<>(HttpStatus.OK.value(),
-                        "Authentication successful",
+                        "Đăng nhập thành công",
                         new AuthResponseDTO(token, roles)
                 );
             } else {
-                return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized access");
+                return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Không có quyền truy cập");
             }
         } catch (BadCredentialsException e) {
             logger.warn("Authentication error: Invalid username or password");
-            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Invalid username or password");
+            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Tên đăng nhập hoặc mật khẩu không đúng");
         }
     }
 
@@ -112,35 +113,27 @@ public class AuthService {
 
     public ResponseData<?> logout(String authorizationHeader) {
         try {
-            // Ensure the header contains the Bearer token
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
                 logger.warn("Logout failed: Invalid Authorization header");
                 return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Invalid Authorization header");
             }
 
-            // Extract the token (the part after "Bearer ")
-            String token = authorizationHeader.substring(7); // Removing "Bearer " part
+            String token = authorizationHeader.substring(7);
 
-            // Get the authentication object (for any other necessary validations, though token suffices)
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
                 logger.warn("Logout failed: User not authenticated");
                 return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "User not authenticated");
             }
 
-            // Token validation - check if it's already blacklisted
             if (tokenBlackListService.isTokenBlacklisted(token)) {
                 logger.warn("Logout failed: Token has already been blacklisted");
                 return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Token has already been blacklisted");
             }
 
-            // Blacklist the token
-            tokenBlackListService.setTokenBlacklist(token, 3600); // 3600 seconds = 1 hour validity for the blacklisted token
-
-            // Clear the authentication context
+            tokenBlackListService.setTokenBlacklist(token, 3600);
             SecurityContextHolder.getContext().setAuthentication(null);
 
-            logger.info("Logout successful for token: {}", token);
             return new ResponseData<>(HttpStatus.OK.value(), "Logout successful", null);
         } catch (Exception e) {
             logger.error("Error during logout: {}", e.getMessage());
@@ -177,7 +170,7 @@ public class AuthService {
     public User registerDepot (RegisterDepotRequestDTO dto){
      try{
          validateUserDetails(dto.getEmail(), dto.getUsername(), dto.getPhoneNumber());
-         User user  = User.builder()  // Changed to use builder pattern
+         User user  = User.builder()
                  .username(dto.getUsername())
                  .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                  .email(dto.getEmail())
@@ -209,7 +202,7 @@ public class AuthService {
 
 
     private User createUser(ResidentRegisterRequestDTO dto, User.UserRole role) {
-        User user = User.builder()  // Changed to use builder pattern
+        User user = User.builder()
                 .username(dto.getUsername())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .email(dto.getEmail())
@@ -227,40 +220,38 @@ public class AuthService {
 
     private void validateResidentDetails(String email, String username, String phoneNumber, String residentCode) {
         if (userRepository.findByEmail(email) != null) {
-            throw new ResourceConflictException("Email is already in use.");
+            throw new BadRequestException("Email đã được đăng kí");
         }
 
         if (userRepository.findByUsername(username) != null) {
-            throw new ResourceConflictException("Username is already in use.");
+            throw new BadRequestException("Số điện thoại đã được đăng kí");
         }
 
-        // Validate phone number and resident code combination in the Apartment repository
         Apartment apartment = apartmentRepository.findByResidentCodeAndPhoneNumber(residentCode, phoneNumber);
         if (apartment == null) {
-            throw new ResourceConflictException("Invalid resident code or phone number.");
+            throw new ResourceConflictException("Mã cư dân hoặc số điện thoại không đúng");
         }
 
-        // Validate phone number and resident code formats
         if (!isValidPhoneNumber(phoneNumber)) {
-            throw new ResourceConflictException("Invalid phone number format.");
+            throw new ResourceConflictException("Số điện thoại không hợp lệ");
         }
 
         if (residentCode != null && !isValidResidentCode(residentCode)) {
-            throw new ResourceConflictException("Invalid resident code format.");
+            throw new ResourceConflictException("Mã cư dân không hợp lệ");
         }
     }
 
     private void validateUserDetails(String email, String username, String phoneNumber) {
         if (userRepository.findByEmail(email) != null) {
-            throw new ResourceConflictException("Email is already in use.");
+            throw new ResourceConflictException("Email đã được đăng kí");
         }
 
         if (userRepository.findByUsername(username) != null) {
-            throw new ResourceConflictException("Username is already in use.");
+            throw new ResourceConflictException("Số điện thoại đã được đăng kí");
         }
 
         if (userRepository.findByPhoneNumber(phoneNumber) != null) {
-            throw new ResourceConflictException("Phone number is already in use.");
+            throw new ResourceConflictException("Số điện thoại đã được đăng kí");
         }
     }
 

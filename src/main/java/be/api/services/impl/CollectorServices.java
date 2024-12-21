@@ -2,6 +2,8 @@ package be.api.services.impl;
 
 import be.api.dto.response.ScheduleResponseDTO;
 import be.api.exception.ResourceNotFoundException;
+
+import be.api.exception.BadRequestException;
 import be.api.model.Collector;
 import be.api.model.Resident;
 import be.api.model.Schedule;
@@ -110,6 +112,25 @@ public class CollectorServices implements ICollectorServices {
         }
         return null;
     }
+
+    @Override
+    public Boolean changeBalanceToPoint(long point) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        if(user == null){
+            throw new BadRequestException("Không tìm thấy user");
+        }
+        Collector collector = user.getCollector();
+        Boolean isCanChange = collector.getBalance() >= (point * 1000);
+        if (!isCanChange) {
+            throw new BadRequestException("Người dùng không đủ điểm để đổi");
+        }
+        collector.setBalance(collector.getBalance() - (point * 1000));
+        collector.setNumberPoint(collector.getNumberPoint() + point);
+        collectorRepository.save(collector);
+        return true;
+    }
+
 
     // get all list schedule theo status
     @Override

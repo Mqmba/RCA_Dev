@@ -2,6 +2,7 @@ package be.api.services.impl;
 
 import be.api.dto.request.DepotMaterialRequestDTO;
 import be.api.dto.response.ResponseError;
+import be.api.exception.BadRequestException;
 import be.api.exception.ResourceNotFoundException;
 import be.api.model.DepotMaterial;
 import be.api.model.Material;
@@ -32,23 +33,23 @@ public class DepotMaterialServices implements IDepotMaterialServices {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
         if (user == null) {
-            throw new ResourceNotFoundException("User not found with username: " + userName);
+            throw new ResourceNotFoundException("Không tìm thấy user: " + userName);
         }
         RecyclingDepot depot = user.getRecyclingDepot();
         if (depot == null) {
-            throw new ResourceNotFoundException("Recycling depot not found");
+            throw new ResourceNotFoundException("Không tìm thấy depot của user: " + userName);
         }
 
         dto.getMaterials().forEach(material -> {
             DepotMaterial depotMaterial = new DepotMaterial();
             DepotMaterial existingDepotMaterial = depotMaterialRepository.findByMaterialIdAndRecyclingDepotId(material.getMaterialId(), depot.getId());
             Material model = materialRepository.findById(material.getMaterialId())
-                    .orElseThrow(() -> new IllegalArgumentException("Material not found with ID: " + material.getMaterialId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy material " + material.getMaterialId()));
             double price = material.getPrice();
 
             double priceOriginWith110Percent = model.getPrice() * 1.1;
             if (price < priceOriginWith110Percent) {
-                throw new IllegalArgumentException("Price must be greater than or equal to 110% of the original price");
+                throw new BadRequestException("Giá của vật liệu không được thấp hơn giá gốc 110%");
             }
             if(existingDepotMaterial != null){
                 existingDepotMaterial.setPrice(price);

@@ -1,6 +1,7 @@
 package be.api.services.impl;
 
 import be.api.dto.request.ResidentRegistrationDTO;
+import be.api.exception.BadRequestException;
 import be.api.exception.ResourceNotFoundException;
 import be.api.model.*;
 import be.api.repository.*;
@@ -37,7 +38,7 @@ public class ResidentServices implements IResidentServices {
         Voucher voucher = voucherRepository.findById(voucherId).orElse(null);
         UserVoucher existingUserVoucher = userVoucherRepository.findByUserAndVoucher(user, voucher);
         if(existingUserVoucher != null){
-            throw new ResourceNotFoundException("You already have this voucher");
+            throw new BadRequestException("Bạn đã có voucher này rồi");
         }
 
         if(voucher == null){
@@ -45,7 +46,7 @@ public class ResidentServices implements IResidentServices {
         }
         Resident resident = user.getResident();
         if(resident.getRewardPoints() < voucher.getPointToRedeem()){
-            throw new IllegalArgumentException("Not enough points to redeem this voucher");
+            throw new BadRequestException("Bạn không đủ điểm để đổi voucher này");
         }
         resident.setRewardPoints(resident.getRewardPoints() - voucher.getPointToRedeem());
         residentRepository.save(resident);

@@ -35,9 +35,10 @@ public class PaymentController {
             String paymentUrl = vnPayService.createPaymentUrl(numberPoint);
             return new ResponseData<>(HttpStatus.OK.value(), "Created payment url successfully", paymentUrl);
         } catch (Exception e) {
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Created payment url failed");
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
 
     @GetMapping("/return")
     public RedirectView vnPayReturn(HttpServletRequest request) {
@@ -59,15 +60,57 @@ public class PaymentController {
         return new RedirectView("https://depot-app.web.app/payment-fail");
     }
 
+    @GetMapping("/create-collectors-payment-url")
+    public ResponseData<?> createCollectorsPayment(@RequestParam int numberPoint) {
+        try {
+            String paymentUrl = vnPayService.createCollectorsPaymentUrl(numberPoint);
+            return new ResponseData<>(HttpStatus.OK.value(), "Created payment url successfully", paymentUrl);
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Created payment url failed");
+        }
+    }
+
+    @GetMapping("/return-vnpay-collector")
+    public RedirectView vnPayReturnCollector(HttpServletRequest request) {
+        Map<String, String> fields = new HashMap<>();
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+            String fieldName = params.nextElement();
+            String fieldValue = request.getParameter(fieldName);
+            fields.put(fieldName, fieldValue);
+        }
+        String vnp_ResponseCode = fields.get("vnp_ResponseCode");
+        String vnp_txnRef = fields.get("vnp_TxnRef");
+
+
+        if ("00".equals(vnp_ResponseCode)) {
+            paymentHistoryServices.updateSuccessPaymentCollector(vnp_txnRef);
+            return new RedirectView("https://collector-app.web.app/payment-success");
+
+        }
+        return new RedirectView("https://collector-app.web.app/payment-fail");
+    }
+
     @GetMapping("/get-list-payment-by-user")
     public ResponseData<?> getListPayment() {
         try {
             List<Payment_History> list = paymentHistoryServices.getPaymentHistoryByUser();
-            return new ResponseData<>(HttpStatus.OK.value(), "get list payment  successfully", list);
+            return new ResponseData<>(HttpStatus.OK.value(), "Lấy danh sách thành công", list);
         } catch (Exception e) {
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "get list payment  failed");
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
+
+    @GetMapping("/change-point-from-depot-to-collector")
+    public ResponseData<?> changePointFromDepotToCollector(@RequestParam long numberPoint, @RequestParam int collectorId) {
+        try {
+            paymentHistoryServices.changePointFromDepotToCollector(numberPoint, collectorId);
+            return new ResponseData<>(HttpStatus.OK.value(), "Đổi điểm thành công", null);
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
 
     private String signData(Map<String, String> fields, String secretKey) {
         List<String> fieldNames = new ArrayList<>(fields.keySet());

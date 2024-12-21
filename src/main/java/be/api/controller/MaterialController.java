@@ -29,10 +29,10 @@ public class MaterialController {
     public ResponseData<?> createMaterial(@Valid @RequestBody MaterialRequestDTO dto) {
         try{
             Material material = materialServices.addMaterial(dto);
-            return new ResponseData<>(HttpStatus.CREATED.value(), "Material added successfully", material);
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Tạo rác thành công", material);
         }
         catch (ResourceNotFoundException e){
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -40,10 +40,10 @@ public class MaterialController {
     public ResponseData<?> getAllMaterials() {
         try{
             List<Material> materials = materialServices.getAllMaterials();
-            return new ResponseData<>(HttpStatus.OK.value(), "Get all materials successfully", materials);
+            return new ResponseData<>(HttpStatus.OK.value(), "Lấy danh sách thành công", materials);
         }
         catch (ResourceNotFoundException e){
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -51,10 +51,10 @@ public class MaterialController {
     public ResponseData<?> updateMaterial(@Valid @RequestBody Material dto) {
         try{
             Material material = materialServices.updateMaterial(dto);
-            return new ResponseData<>(HttpStatus.OK.value(), "Material updated successfully", material);
+            return new ResponseData<>(HttpStatus.OK.value(), "Update thành công", material);
         }
         catch (ResourceNotFoundException e){
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -63,9 +63,9 @@ public class MaterialController {
         try{
             Boolean result = materialServices.deleteMaterial(id);
             if(result){
-                return new ResponseData<>(HttpStatus.OK.value(), "Material deleted successfully", null);
+                return new ResponseData<>(HttpStatus.OK.value(), "Xóa thành công", null);
             }
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), "Material not found");
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Xóa thất bại");
         }
         catch (ResourceNotFoundException e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());

@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @PostMapping("get-list-user-by-paging")
-    public ResponseData<List<UserRequestDTO>> getListUserByPaging(@RequestParam int pageNo, @RequestParam int pageSize) {
+    public ResponseData<?> getListUserByPaging(@RequestParam int pageNo, @RequestParam int pageSize) {
         try {
            return new ResponseData<>(HttpStatus.OK.value(), "List user found", userServices.getListUserByPaging(pageNo, pageSize));
         } catch (ResourceNotFoundException e) {
@@ -79,7 +79,7 @@ public class UserController {
     }
 
     @GetMapping("search-users-by-name")
-    public ResponseData<List<UserRequestDTO>> searchUsersByName(@RequestParam String name, @RequestParam int pageNo, @RequestParam int pageSize) {
+    public ResponseData<?> searchUsersByName(@RequestParam String name, @RequestParam int pageNo, @RequestParam int pageSize) {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "List user found", userServices.searchUsersByName(name, pageNo, pageSize));
         } catch (ResourceNotFoundException e) {
@@ -97,7 +97,7 @@ public class UserController {
     }
 
     @GetMapping("get-info-user")
-    public ResponseData<User> getInfoUser() {
+    public ResponseData<?> getInfoUser() {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "User found", userServices.getInfoUser());
         } catch (ResourceNotFoundException e) {
@@ -108,18 +108,19 @@ public class UserController {
     @GetMapping("/get-point-by-user")
     public ResponseData<?> getPointByUser() {
         try {
-            return new ResponseData<>(200, "Success", pointServices.getPoints());
+            return new ResponseData<>(200, "Lấy thành công", pointServices.getPoints());
         } catch (Exception e) {
-            return new ResponseData<>(500, "An unexpected error occurred", null);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+
         }
     }
 
     @GetMapping("/change-point-to-voucher")
     public ResponseData<?> changePointToVoucher(@RequestParam int voucherId) {
         try {
-            return new ResponseData<>(200, "Success", residentServices.changePointToVoucher(voucherId));
+            return new ResponseData<>(200, "Đổi thành công", residentServices.changePointToVoucher(voucherId));
         } catch (Exception e) {
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -128,7 +129,7 @@ public class UserController {
         try {
             return new ResponseData<>(200, "Success", residentServices.getListVoucherByResidentId());
         } catch (Exception e) {
-            return new ResponseData<>(500, "An unexpected error occurred", null);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 

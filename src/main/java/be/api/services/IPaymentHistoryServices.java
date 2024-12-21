@@ -10,4 +10,7 @@ public interface IPaymentHistoryServices {
     Boolean updateSuccessPayment(String orderCode);
     Payment_History getPaymentHistoryByOrderCode(String orderCode);
     List<Payment_History> getPaymentHistoryByUser();
+    Boolean updateSuccessPaymentCollector(String orderCode);
+    Boolean changePointFromDepotToCollector(Long point, int collectorId);
+
 }
