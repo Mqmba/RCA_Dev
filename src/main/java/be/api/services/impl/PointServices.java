@@ -1,6 +1,8 @@
 package be.api.services.impl;
 
 import be.api.dto.request.PointRequestDTO;
+import be.api.exception.BadRequestException;
+import be.api.exception.ResourceNotFoundException;
 import be.api.model.Collector;
 import be.api.model.Resident;
 import be.api.model.User;
@@ -32,24 +34,6 @@ public class PointServices implements IPointServices {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-//    @Override
-//    public int getPoints(@Nullable Integer collectorId, @Nullable Integer residentId) {
-//        try {
-//            if (collectorId != null) {
-//                return collectorRepository.findById(collectorId)
-//                        .map(Collector::getNumberPoint)
-//                        .orElse(0);
-//            } else if (residentId != null) {
-//                return residentRepository.findById(residentId)
-//                        .map(Resident::getRewardPoints)
-//                        .orElse(0);
-//            } else {
-//                return 0;
-//            }
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException("Failed to retrieve points", e);
-//        }
-//    }
 
     @Override
     public double getPoints() {
@@ -65,7 +49,7 @@ public class PointServices implements IPointServices {
                 return user.getRecyclingDepot().getBalance();
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve points", e);
+            throw new BadRequestException(e.getMessage());
         }
         return 0;
     }
@@ -74,7 +58,7 @@ public class PointServices implements IPointServices {
     @Transactional
     public String updatePointByUser(PointRequestDTO pointRequest) {
         if (pointRequest == null) {
-            throw new IllegalArgumentException("PointRequestDTO cannot be null");
+            throw new BadRequestException("Không được để trống thông tin");
         }
 
         try {
@@ -83,23 +67,23 @@ public class PointServices implements IPointServices {
             int amount = pointRequest.getAmount();
             Optional<Collector> collector = collectorRepository.findById(senderId);
             Optional<Resident> resident = residentRepository.findById(receiverId);
-            if (collector.isEmpty()) throw new IllegalArgumentException("Collector not found");
-            if (resident.isEmpty()) throw new IllegalArgumentException("Resident not found");
+            if (collector.isEmpty()) throw new ResourceNotFoundException("Không tìm thấy collector");
+            if (resident.isEmpty()) throw new ResourceNotFoundException("Không tìm thấy resident");
             if(collector.get().getNumberPoint() - amount > 0){
                 collectorRepository.updateByCollectorId(senderId, amount);
                 residentRepository.updateResidentById(receiverId, amount);
                 return "Resident " + resident.get().getUser().getUsername() + " received " + amount + " from " + collector.get().getUser().getUsername();
             }
             else{
-                throw new RuntimeException("Not enough points");
+                throw new BadRequestException("Khong đủ điểm để chuyển");
             }
         } catch (EntityNotFoundException e) {
-            throw new RuntimeException("Entity not found", e);
+            throw new BadRequestException("Entity not found");
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid argument provided", e);
+            throw new BadRequestException("Invalid argument provided");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new BadRequestException(e.getMessage());
         }
     }
 }

@@ -32,7 +32,7 @@ public class MaterialServices implements IMaterialServices {
     public Material addMaterial(MaterialRequestDTO material) {
         Material material1 = modelMapper.map(material, Material.class);
         materialRepository.save(material1);
-        log.info("Material added successfully");
+        log.info("Tạo rác thành công");
         return material1;
     }
 
@@ -46,7 +46,7 @@ public class MaterialServices implements IMaterialServices {
             exitMaterial.setDescription(dto.getDescription());
             exitMaterial.setPrice(dto.getPrice());
             materialRepository.save(exitMaterial);
-            log.info("Material updated successfully");
+            log.info("Update rác thành công");
             return exitMaterial;
         }
         return null;

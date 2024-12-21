@@ -15,4 +15,5 @@ public interface ICollectorServices {
     List<Schedule> getListScheduleByStatus (Schedule.scheduleStatus status);
     List<Schedule> getAllSchedules();
     List<Schedule> getAllScheduleByUser();
+    Boolean changeBalanceToPoint(long point);
 }

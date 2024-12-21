@@ -31,7 +31,7 @@ public class CollectorController {
         try{
             return new ResponseData<>(
                     200,
-                    "Successfully retrieved list collector",
+                    "Lấy danh sách collector thành công",
                     collectorServices.getAllCollectors(page, size));
         } catch (Exception e) {
             return new ResponseData<>(500, "Internal server error while retrieving list collector with message: " + e.getMessage(), null);
@@ -55,6 +55,20 @@ public class CollectorController {
         }
         catch (ResourceNotFoundException e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/change-balance-to-point")
+    ResponseData<?> changeBalanceToPoint(@RequestParam
+                                         long point) {
+        try{
+            return new ResponseData<>(
+                    200,
+                    "Đổi thành công",
+                    collectorServices.changeBalanceToPoint(point));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 

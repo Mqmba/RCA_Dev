@@ -1,8 +1,11 @@
 package be.api.services.impl;
 
+import be.api.exception.BadRequestException;
+import be.api.model.Collector;
 import be.api.model.Payment_History;
 import be.api.model.RecyclingDepot;
 import be.api.model.User;
+import be.api.repository.ICollectorRepository;
 import be.api.repository.IPaymentHistoryRepository;
 import be.api.repository.IRecyclingDepotRepository;
 import be.api.repository.IUserRepository;
@@ -22,13 +25,17 @@ public class PaymentHistoryServices implements IPaymentHistoryServices
 
     private final IPaymentHistoryRepository paymentHistoryRepository;
     private final IUserRepository userRepository;
-
+    private final ICollectorRepository collectorRepository;
     private final IRecyclingDepotRepository recyclingDepotRepository;
 
     @Override
     public Boolean createPaymentHistory(String orderCode, int paymentStatus, int NumberPoint) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
+        if(user == null){
+            throw new BadRequestException("Không tìm thấy user");
+        }
+
         Payment_History paymentHistory = new Payment_History();
 
         paymentHistory.setOrderCode(orderCode);
@@ -53,6 +60,38 @@ public class PaymentHistoryServices implements IPaymentHistoryServices
 
         return true;
     }
+
+    @Override
+    public Boolean updateSuccessPaymentCollector(String orderCode) {
+        Payment_History paymentHistory = paymentHistoryRepository.findByOrderCode(orderCode);
+        paymentHistory.setPaymentStatus(2);
+        paymentHistoryRepository.save(paymentHistory);
+        User user = paymentHistory.getUser();
+        Collector collector = user.getCollector();
+        collector.setNumberPoint(collector.getNumberPoint() + paymentHistory.getNumberPoint());
+        collectorRepository.save(collector);
+        return true;
+    }
+
+    @Override
+    public Boolean changePointFromDepotToCollector(Long point, int collectorId) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        if(user == null){
+            throw new BadRequestException("Không tìm thấy user");
+        }
+        RecyclingDepot recyclingDepot = user.getRecyclingDepot();
+        if(recyclingDepot.getBalance() < point){
+            throw new BadRequestException("Người dùng không đủ điểm để đổi");
+        }
+        recyclingDepot.setBalance(recyclingDepot.getBalance() - point);
+        recyclingDepotRepository.save(recyclingDepot);
+        Collector collector = collectorRepository.findById(collectorId).get();
+        collector.setNumberPoint(collector.getNumberPoint() + point);
+        collectorRepository.save(collector);
+        return true;
+    }
+
 
     @Override
     public Payment_History getPaymentHistoryByOrderCode(String orderCode) {

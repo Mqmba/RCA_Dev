@@ -43,7 +43,7 @@ public class AuthController {
             return authService.authenticate(request);
         } catch (Exception e) {
             logger.error("Authentication error: {}", e.getMessage());
-            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Authentication failed");
+            return new ResponseError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
         }
     }
 

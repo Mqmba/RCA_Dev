@@ -1,5 +1,6 @@
 package be.api.services.impl;
 
+import be.api.exception.ResourceNotFoundException;
 import be.api.model.Building;
 import be.api.repository.IBuildingRepository;
 import be.api.services.IBuildingService;
@@ -32,7 +33,7 @@ public class BuildingService implements IBuildingService {
     @Transactional
     public Building updateBuildingById(Integer id, Building building) {
         Building existingBuilding = buildingRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Building not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy building: " + id));
 
         existingBuilding.setBuildingName(building.getBuildingName());
         existingBuilding.setLocation(building.getLocation());

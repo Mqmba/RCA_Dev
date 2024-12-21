@@ -23,7 +23,7 @@ public class DepotMaterialController {
     @PostMapping("create-update-depot-material")
     public ResponseData<?> addUser(@Valid @RequestBody DepotMaterialRequestDTO dto) {
         try{
-            return new ResponseData<>(HttpStatus.CREATED.value(), "Created depot material successfully", depotMaterialService.createDepotMaterial(dto));
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Tạo thành công", depotMaterialService.createDepotMaterial(dto));
         }
         catch (ResourceNotFoundException e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());

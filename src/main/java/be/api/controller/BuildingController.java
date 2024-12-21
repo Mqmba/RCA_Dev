@@ -1,11 +1,13 @@
 package be.api.controller;
 
 import be.api.dto.response.ResponseData;
+import be.api.dto.response.ResponseError;
 import be.api.model.Building;
 import be.api.services.impl.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +37,7 @@ public class BuildingController {
             return new ResponseData<>(200, "List of buildings found", buildings);
         }
         catch (Exception e){
-            return new ResponseData<>(500, "Internal server error while retrieving list of buildings with message: " + e.getMessage(), null);
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
 }
