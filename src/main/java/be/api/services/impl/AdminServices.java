@@ -100,7 +100,7 @@ public class AdminServices implements IAdminServices  {
             long totalTransactionOngoing = scheduleRepository.findByAccepteAndOnGoing(Schedule.scheduleStatus.ACCEPTED);
             long totalTransactionPending = scheduleRepository.findByStatus(Schedule.scheduleStatus.PENDING).size();
             long totalTransactionFinished = scheduleRepository.findByStatus(Schedule.scheduleStatus.SUCCESS).size();
-            List<Schedule> top5ScheduleByCreatedAt = scheduleRepository.findTop5ByOrderByCreatedAtDesc();
+            List<Schedule> top5ScheduleByCreatedAt = scheduleRepository.findAll();
 
 
             adminTransactionResponseDTO.setNumberTransaction(totalTransaction);

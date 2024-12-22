@@ -129,10 +129,10 @@ public class ScheduleService implements IScheduleService {
 
 
     @Override
-    public ScheduleResponseDTO getScheduleById(Integer id) {
+    public Schedule getScheduleById(Integer id) {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + id));
-        return modelMapper.map(schedule, ScheduleResponseDTO.class);
+        return schedule;
     }
 
     @Override

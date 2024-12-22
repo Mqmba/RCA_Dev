@@ -1,5 +1,6 @@
 package be.api.services.impl;
 
+import be.api.controller.RecyclingDepotController;
 import be.api.dto.request.CDPaymentRequestDTO;
 import be.api.dto.request.CRPaymentRequestDTO;
 import be.api.dto.response.CDPaymentResponse;
@@ -111,7 +112,10 @@ public class CDPaymentServices implements ICDPaymentServices {
 
     @Override
     public List<CDPaymentResponse> getListPayment() {
-         List<CollectorDepotPayment> payments = cdPaymentRepository.findAll();
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        RecyclingDepot recyclingDepot = user.getRecyclingDepot();
+         List<CollectorDepotPayment> payments = cdPaymentRepository.findByRecyclingDepot(recyclingDepot);
          List<CDPaymentResponse> response = new ArrayList<>();
          for (CollectorDepotPayment payment : payments) {
                 CDPaymentResponse cdPaymentResponse = new CDPaymentResponse();

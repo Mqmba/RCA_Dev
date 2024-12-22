@@ -128,9 +128,9 @@ public class ScheduleController {
 
 
     @GetMapping("/get-schedule-by-id")
-    public ResponseData<ScheduleResponseDTO> getScheduleById(@RequestParam Integer id) {
+    public ResponseData<Schedule> getScheduleById(@RequestParam Integer id) {
         try {
-            ScheduleResponseDTO schedule = scheduleService.getScheduleById(id);
+            Schedule schedule = scheduleService.getScheduleById(id);
             return new ResponseData<>(HttpStatus.OK.value(), "Get schedule successful", schedule);
         } catch (ResourceNotFoundException e) {
             throw new BadRequestException(e.getMessage());
