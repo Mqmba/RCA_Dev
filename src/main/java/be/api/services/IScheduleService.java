@@ -19,7 +19,7 @@ public interface IScheduleService {
     Page<Schedule> getUserSchedules(Integer userId, Pageable pageable);
     List<Schedule> getUserSchedules(Integer userId,Schedule.scheduleStatus status);
     List<Schedule> getUserSchedules(Integer userId);
-    ScheduleResponseDTO getScheduleById(Integer id);
+    Schedule getScheduleById(Integer id);
 
     @Query("SELECT s FROM Schedule s WHERE s.residentId = :residentId AND s.status = :status")
     List<Schedule> getScheduleOfResidentByUserIdAndStatus(Integer residentId, Schedule.scheduleStatus status);
