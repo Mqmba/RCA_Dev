@@ -34,6 +34,5 @@ public class Building {
     @Column(name = "UpdatedAt")
     private Date updatedAt;  // Ensure you have updatedAt field.
 
-//    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<Apartment> apartments;
+
 }

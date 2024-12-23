@@ -4,6 +4,7 @@ import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
 import be.api.model.Payment_History;
 import be.api.services.impl.PaymentHistoryServices;
+import be.api.services.impl.TransactionServices;
 import be.api.services.impl.VnPayService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -19,14 +20,15 @@ public class PaymentController {
 
     private final VnPayService vnPayService;
     private final PaymentHistoryServices paymentHistoryServices;
-
+    private final TransactionServices transactionServices;
 
 
     public PaymentController(VnPayService vnPayService, PaymentHistoryServices
-                              paymentHistoryServices) {
+                              paymentHistoryServices, TransactionServices transactionServices) {
         this.vnPayService = vnPayService;
 
         this.paymentHistoryServices = paymentHistoryServices;
+        this.transactionServices = transactionServices;
     }
 
     @GetMapping("/create-payment-url")
@@ -106,6 +108,16 @@ public class PaymentController {
         try {
             paymentHistoryServices.changePointFromDepotToCollector(numberPoint, collectorId);
             return new ResponseData<>(HttpStatus.OK.value(), "Đổi điểm thành công", null);
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/change-point-to-user")
+    public ResponseData<?> changePointToUser(@RequestParam long numberPoint, @RequestParam int userId) {
+        try {
+            transactionServices.transferPoint(userId, numberPoint);
+            return new ResponseData<>(HttpStatus.OK.value(), "Chuyển tiền thành công", null);
         } catch (Exception e) {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
