@@ -10,4 +10,7 @@ public interface IApartmentServices {
     Apartment createApartment(ApartmentRequestDTO apartment);
     Apartment updateApartment(ApartmentRequestDTO apartment);
     List<Apartment> getAllApartments();
+    List<Apartment> getListApartmentByBuildingId(int buildingId);
+
 }
+

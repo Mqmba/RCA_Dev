@@ -23,16 +23,16 @@ public class Building {
     private String buildingName;
 
     @Column(name = "Location")
-    private String location;  // Ensure you have location field.
+    private String location;
 
     @Column(name = "Description")
-    private String description;  // Ensure you have description field.
+    private String description;
 
     @Column(name = "CreatedAt")
-    private Date createdAt;  // Ensure you have createdAt field.
+    private Date createdAt;
 
     @Column(name = "UpdatedAt")
-    private Date updatedAt;  // Ensure you have updatedAt field.
+    private Date updatedAt;
 
 
 }

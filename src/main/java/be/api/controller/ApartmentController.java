@@ -45,10 +45,21 @@ public class ApartmentController {
     @GetMapping("/get-list-apartment")
     public ResponseData<?> getApartments() {
         try {
-            return new ResponseData<>(200, "List of apartments found", apartmentService.getAllApartments());
+            return new ResponseData<>(200, "Lấy thành công", apartmentService.getAllApartments());
         } catch (Exception e) {
             logger.error("Error while retrieving apartments: {}", e.getMessage());
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
+
+    @GetMapping("/get-list-apartment-by-building-id")
+    public ResponseData<?> getApartmentsByBuildingId(@RequestParam int buildingId) {
+        try {
+            return new ResponseData<>(200, "Lấy thành công", apartmentService.getListApartmentByBuildingId(buildingId));
+        } catch (Exception e) {
+            logger.error("Error while retrieving apartments: {}", e.getMessage());
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
 }

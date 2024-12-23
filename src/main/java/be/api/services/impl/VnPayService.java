@@ -95,7 +95,7 @@ public class VnPayService {
             String vnp_Version = "2.1.0";
             String vnp_Command = "pay";
             String vnp_TmnCode = "Q0QOWMPZ";
-            String vnp_ReturnUrl = "http://localhost:8080/payment/return-vnpay-collector";
+            String vnp_ReturnUrl = "https://clownfish-app-wvth5.ondigitalocean.app/payment/return-vnpay-collector";
             String vnp_TxnRef = String.valueOf(System.currentTimeMillis()).substring(7);
             String vnp_OrderInfo = "Thanh toán đơn hàng: " + vnp_TxnRef;
             String orderType = "other";
