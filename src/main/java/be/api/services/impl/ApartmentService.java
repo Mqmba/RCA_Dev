@@ -71,4 +71,11 @@ public class ApartmentService implements IApartmentServices {
         }
     }
 
+    @Override
+    public List<Apartment> getListApartmentByBuildingId(int buildingId) {
+        List<Apartment> apartments =  apartmentRepository.findByBuilding_BuildingId(buildingId);
+        return apartments;
+    }
+
+
 }

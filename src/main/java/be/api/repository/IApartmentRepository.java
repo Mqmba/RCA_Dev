@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface IApartmentRepository extends JpaRepository<Apartment, Integer> {
 
     @Modifying
@@ -21,4 +23,6 @@ public interface IApartmentRepository extends JpaRepository<Apartment, Integer> 
     Apartment findByResidentCodeAndPhoneNumber(String residentCode, String phoneNumber);
 
     Apartment findByResident_ResidentId(int residentId);
+
+    List<Apartment> findByBuilding_BuildingId(int buildingId);
 }

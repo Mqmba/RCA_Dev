@@ -2,6 +2,7 @@ package be.api.services.impl;
 
 import be.api.dto.request.CRPaymentRequestDTO;
 import be.api.dto.response.CRPaymentResponse;
+import be.api.exception.BadRequestException;
 import be.api.model.*;
 import be.api.repository.*;
 import be.api.services.ICRPaymentServices;
@@ -27,31 +28,55 @@ public class CRPaymentServices implements ICRPaymentServices {
     @Override
     public Integer createCRPayment(CRPaymentRequestDTO dto) {
         // 1. Lưu CollectorResident_Payment
-        CollectorResidentPayment payment = new CollectorResidentPayment();
-        Schedule schedule = scheduleRepository.findById(dto.getScheduleId())
-                .orElseThrow(() -> new IllegalArgumentException("Schedule not found with ID: " + dto.getScheduleId()));
-        payment.setSchedule(schedule);
+        CollectorResidentPayment existingPayment = crPaymentRepository.findByScheduleId(dto.getScheduleId());
+        if(existingPayment != null){
+            existingPayment.setAmountPoint(calculateAmountPoint(dto.getMaterials()));
+            CollectorResidentPayment updatedPayment = crPaymentRepository.save(existingPayment);
+            List<CRPayment_Detail> existingDetails = crPaymentDetailRepository.findByCrPaymentId(updatedPayment.getCrPaymentId());
+            crPaymentDetailRepository.deleteAll(existingDetails);
+            dto.getMaterials().forEach(material -> {
+                CRPayment_Detail detail = new CRPayment_Detail();
+                detail.setCrPaymentId(updatedPayment.getCrPaymentId());
+                Material model = materialRepository.findById(material.getMaterialId())
+                        .orElseThrow(() -> new BadRequestException("Không tìm thấy material " + material.getMaterialId()));
+                detail.setMaterial(model);
+                detail.setQuantity(material.getQuantity());
+                crPaymentDetailRepository.save(detail);
+            });
+
+            // Trả về ID của CollectorResidentPayment đã cập nhật
+            return updatedPayment.getCrPaymentId();
+
+        }
+        else{
+            CollectorResidentPayment payment = new CollectorResidentPayment();
+            Schedule schedule = scheduleRepository.findById(dto.getScheduleId())
+                    .orElseThrow(() -> new IllegalArgumentException("Schedule not found with ID: " + dto.getScheduleId()));
+            payment.setSchedule(schedule);
 //        payment.setAmountPoint(2222);
-        payment.setAmountPoint(calculateAmountPoint(dto.getMaterials()));
-        payment.setStatus(1);
+            payment.setAmountPoint(calculateAmountPoint(dto.getMaterials()));
+            payment.setStatus(1);
 
-        CollectorResidentPayment savedPayment = crPaymentRepository.save(payment);
-        Integer crPaymentId = savedPayment.getCrPaymentId();
+            CollectorResidentPayment savedPayment = crPaymentRepository.save(payment);
+            Integer crPaymentId = savedPayment.getCrPaymentId();
 
-        // 2. Lưu CRPayment_Detail cho từng vật liệu
-        dto.getMaterials().forEach(material -> {
-            CRPayment_Detail detail = new CRPayment_Detail();
-            detail.setCrPaymentId(crPaymentId);
-            Material model = materialRepository.findById(material.getMaterialId())
-                    .orElseThrow(() -> new IllegalArgumentException("Material not found with ID: " + material.getMaterialId()));
-            detail.setMaterial(model);
-            detail.setQuantity(material.getQuantity());
-            crPaymentDetailRepository.save(detail);
-        });
+            // 2. Lưu CRPayment_Detail cho từng vật liệu
+            dto.getMaterials().forEach(material -> {
+                CRPayment_Detail detail = new CRPayment_Detail();
+                detail.setCrPaymentId(crPaymentId);
+                Material model = materialRepository.findById(material.getMaterialId())
+                        .orElseThrow(() -> new IllegalArgumentException("Material not found with ID: " + material.getMaterialId()));
+                detail.setMaterial(model);
+                detail.setQuantity(material.getQuantity());
+                crPaymentDetailRepository.save(detail);
+            });
 
 
-        // Trả về ID của CollectorResident_Payment vừa tạo
-        return crPaymentId;
+            // Trả về ID của CollectorResident_Payment vừa tạo
+            return crPaymentId;
+        }
+
+
     }
 
     @Override
