@@ -1,5 +1,6 @@
 package be.api.controller;
 
+import be.api.dto.request.CancelScheduleRequestDTO;
 import be.api.dto.request.ScheduleDTO;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
@@ -49,7 +50,7 @@ public class ScheduleController {
             } else {
                 return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Authorization không hợp lệ");
             }
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -64,6 +65,15 @@ public class ScheduleController {
                                                          @RequestParam Schedule.scheduleStatus status,
                                                          @RequestParam Integer depotId) {
         return ResponseEntity.ok(scheduleService.changeScheduleStatus(id, status, depotId));
+    }
+
+    @PatchMapping("/cancel-collection-schedule")
+    public ResponseData<?> getTransactionByUserId(@RequestBody CancelScheduleRequestDTO dto) {
+        try {
+            return new ResponseData<>(200, "Thành công", scheduleService.cancelScheduleById(dto));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
     }
 
     @GetMapping("/get-list-collection-schedule-by-user")
@@ -124,8 +134,6 @@ public class ScheduleController {
             throw new BadRequestException(e.getMessage());
         }
     }
-
-
 
     @GetMapping("/get-schedule-by-id")
     public ResponseData<Schedule> getScheduleById(@RequestParam Integer id) {

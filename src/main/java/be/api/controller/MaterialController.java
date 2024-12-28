@@ -1,13 +1,16 @@
 package be.api.controller;
 
+import be.api.dto.request.CreateMaterialTypeRequestDTO;
 import be.api.dto.request.MaterialRequestDTO;
 import be.api.dto.response.ResponseError;
 import be.api.dto.response.ResponseData;
 import be.api.dto.request.UserRequestDTO;
 import be.api.exception.ResourceNotFoundException;
 import be.api.model.Material;
+import be.api.model.MaterialType;
 import be.api.model.User;
 import be.api.services.impl.MaterialServices;
+import be.api.services.impl.MaterialTypeServices;
 import be.api.services.impl.UserServices;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class MaterialController {
 
 
     public final MaterialServices materialServices;
+    public final MaterialTypeServices materialTypeServices;
 
     @PostMapping("create-material")
     public ResponseData<?> createMaterial(@Valid @RequestBody MaterialRequestDTO dto) {
@@ -31,7 +35,7 @@ public class MaterialController {
             Material material = materialServices.addMaterial(dto);
             return new ResponseData<>(HttpStatus.CREATED.value(), "Tạo rác thành công", material);
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
@@ -42,7 +46,7 @@ public class MaterialController {
             List<Material> materials = materialServices.getAllMaterials();
             return new ResponseData<>(HttpStatus.OK.value(), "Lấy danh sách thành công", materials);
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
@@ -53,7 +57,7 @@ public class MaterialController {
             Material material = materialServices.updateMaterial(dto);
             return new ResponseData<>(HttpStatus.OK.value(), "Update thành công", material);
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
@@ -67,8 +71,42 @@ public class MaterialController {
             }
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Xóa thất bại");
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
+    @PostMapping("create-material-type")
+    public ResponseData<?> createMaterialType(@Valid @RequestBody CreateMaterialTypeRequestDTO dto) {
+        try{
+            Boolean success = materialTypeServices.createMaterialType(dto.getName());
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Tạo loại rác thành công", success);
+        }
+        catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+    @GetMapping("get-all-material-type")
+    public ResponseData<?> getAllMaterialTypes() {
+        try{
+            List<MaterialType> materialTypes = materialTypeServices.getAllMaterialType();
+            return new ResponseData<>(HttpStatus.OK.value(), "Lấy danh sách loại rác thành công", materialTypes);
+        }
+        catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+
+    @GetMapping("get-material-type-by-id/{id}")
+    public ResponseData<?> getMaterialTypeById(@PathVariable int id) {
+        try{
+            MaterialType materialType = materialTypeServices.getMaterialTypeById(id);
+            return new ResponseData<>(HttpStatus.OK.value(), "Lấy loại rác thành công", materialType);
+        }
+        catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 

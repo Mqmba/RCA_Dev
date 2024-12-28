@@ -34,7 +34,7 @@ public class CollectorController {
                     "Lấy danh sách collector thành công",
                     collectorServices.getAllCollectors(page, size));
         } catch (Exception e) {
-            return new ResponseData<>(500, "Internal server error while retrieving list collector with message: " + e.getMessage(), null);
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
     @PutMapping("/change-is-working-status")
@@ -51,10 +51,10 @@ public class CollectorController {
     ResponseData<?> acceptCollector(@RequestParam Integer scheduleId) {
         try{
             Schedule schedule = collectorServices.acceptCollectSchedule(scheduleId);
-            return new ResponseData<>(HttpStatus.CREATED.value(), "Material added successfully", "Schedule accepted");
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Nhận lịch thành công", schedule.getScheduleId());
         }
-        catch (ResourceNotFoundException e){
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -102,11 +102,11 @@ public class CollectorController {
 
             return new ResponseData<>(
                     200,
-                    "Successfully retrieved list collector",
+                    "Lấy danh sách thành công",
                     schedules);
         }
-        catch (ResourceNotFoundException e){
-            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -117,7 +117,7 @@ public class CollectorController {
             @RequestParam(value = "sortOrder", defaultValue = "ASC") String sortOrder) {
         try {
             if (!sortOrder.equalsIgnoreCase("ASC") && !sortOrder.equalsIgnoreCase("DESC")) {
-                return new ResponseData<>(400, "Invalid sortOrder parameter. Use 'ASC' or 'DESC'.", null);
+                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Không hợp lệ sortOrder parameter. Sử dụng 'ASC' hoặc 'DESC'.");
             }
 
             List<Schedule> schedules;
@@ -135,9 +135,9 @@ public class CollectorController {
                 }
             });
 
-            return new ResponseData<>(200, "Successfully retrieved sorted list of schedules", schedules);
-        } catch (Exception e) {
-            return new ResponseData<>(500, "Internal server error while retrieving and sorting schedules: " + e.getMessage(), null);
+            return new ResponseData<>(200, "Thành công", schedules);
+        }  catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -145,8 +145,8 @@ public class CollectorController {
     ResponseData<?> createCollectorResidentPayment(@RequestBody CRPaymentRequestDTO crPaymentRequestDTO) {
         try{
             return new ResponseData<>(200,"create-success", crPaymentServices.createCRPayment(crPaymentRequestDTO));
-        }catch (Exception e) {
-            return new ResponseData<>(500, "Internal server error while crate collect with message: " + e.getMessage(), null);
+        } catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -154,8 +154,8 @@ public class CollectorController {
     ResponseData<?> updateSuccessfulPayment(@RequestParam int paymentId) {
         try{
             return new ResponseData<>(200,"update-success", crPaymentServices.updateSuccessCRPayment(paymentId));
-        }catch (Exception e) {
-            return new ResponseData<>(500, "Internal server error while updating payment with message: " + e.getMessage(), null);
+        } catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -163,8 +163,8 @@ public class CollectorController {
     ResponseData<?> getPaymentCRById(@RequestParam int paymentId) {
         try{
             return new ResponseData<>(200,"get-success", crPaymentServices.getCRPaymentById(paymentId));
-        }catch (Exception e) {
-            return new ResponseData<>(500, "Internal server error while getting payment with message: " + e.getMessage(), null);
+        } catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 
@@ -172,8 +172,8 @@ public class CollectorController {
     ResponseData<?> getPaymentCRByScheduleId(@RequestParam int scheduleId) {
         try{
             return new ResponseData<>(200,"get-success", crPaymentServices.findByScheduleId(scheduleId));
-        }catch (Exception e) {
-            return new ResponseData<>(500, "Internal server error while getting payment with message: " + e.getMessage(), null);
+        } catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 

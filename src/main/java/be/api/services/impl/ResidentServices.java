@@ -1,6 +1,7 @@
 package be.api.services.impl;
 
 import be.api.dto.request.ResidentRegistrationDTO;
+import be.api.dto.response.AnalyzeMaterial;
 import be.api.exception.BadRequestException;
 import be.api.exception.ResourceNotFoundException;
 import be.api.model.*;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +31,7 @@ public class ResidentServices implements IResidentServices {
     private final IResidentRepository residentRepository;
     private final IUserRepository userRepository;
     private final IVoucherRepository voucherRepository;
+    private final ICRPaymentDetailRepository crPaymentDetailRepository;
 
 
     @Override
@@ -64,4 +67,40 @@ public class ResidentServices implements IResidentServices {
         User user = userRepository.findByUsername(userName);
         return userVoucherRepository.findByUser(user);
     }
+
+    @Override
+    public AnalyzeMaterial analyzeMaterialByResidentId() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new ResourceNotFoundException("Không tìm thấy user");
+        }
+
+        Resident resident = user.getResident();
+
+        List<Object[]> results = residentRepository.findAnalyzeMaterialByResidentId(resident.getResidentId());
+        List<AnalyzeMaterial.AnalyzeItem> analyzeItems = new ArrayList<>();
+        for (Object[] row : results) {
+            String materialTypeName = (String) row[0];
+            double totalWeight = ((Number) row[1]).doubleValue();
+            analyzeItems.add(new AnalyzeMaterial.AnalyzeItem(materialTypeName, totalWeight));
+        }
+
+        List<Object[]> rankingResults = residentRepository.findRankingByResidentId(resident.getResidentId());
+        if (rankingResults.isEmpty()) {
+            throw new ResourceNotFoundException("Không có dữ liệu ranking!");
+        }
+
+        Object[] row = rankingResults.get(0);
+        // [0] = ResidentId, [1] = TotalWeight, [2] = Ranking
+        long ranking = ((Number) row[2]).longValue();
+
+        AnalyzeMaterial analyzeMaterial = new AnalyzeMaterial();
+        analyzeMaterial.setDataAnalyze(analyzeItems);
+        analyzeMaterial.setRanking(ranking);
+
+        return analyzeMaterial;
+    }
+
+
 }

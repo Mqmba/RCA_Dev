@@ -24,4 +24,8 @@ public class Material {
 
     @Column (name="Price")
     private double price;
+
+    @ManyToOne
+    @JoinColumn(name = "MaterialTypeId", referencedColumnName = "MaterialTypeId")
+    private MaterialType materialType;
 }

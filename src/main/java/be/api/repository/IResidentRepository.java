@@ -33,4 +33,40 @@ public interface IResidentRepository extends JpaRepository<Resident, Integer> {
     @Query("SELECT r FROM Resident r ORDER BY r.rewardPoints DESC")
     List<Resident> findTop5ByOrderByRewardPointsDesc();
 
+    @Query(value = "SELECT mt.Name AS MaterialTypeName, SUM(md.Quantity) AS TotalWeight " +
+            "FROM CRPayment_Detail md " +
+            "JOIN Material m ON md.MaterialId = m.MaterialId " +
+            "JOIN MaterialType mt ON m.MaterialTypeId = mt.MaterialTypeId " +
+            "JOIN CollectorResident_Payment crp ON md.CRPaymentId = crp.CRPaymentId " +
+            "JOIN Schedule s ON crp.ScheduleId = s.ScheduleId " +
+            "WHERE crp.PaymentStatus = 2 AND s.ResidentId = :residentId " +
+            "GROUP BY mt.Name", nativeQuery = true)
+    List<Object[]> findAnalyzeMaterialByResidentId(@Param("residentId") int residentId);
+
+    @Query(value =
+            "SELECT r.ResidentId, " +
+                    "       SUM(md.Quantity) AS TotalWeight, " +
+                    "       FIND_IN_SET( " +
+                    "           CAST(SUM(md.Quantity) AS CHAR), " +
+                    "           ( " +
+                    "               SELECT GROUP_CONCAT(TotalWeight ORDER BY TotalWeight DESC) " +
+                    "               FROM ( " +
+                    "                   SELECT r2.ResidentId, SUM(md2.Quantity) AS TotalWeight " +
+                    "                   FROM CRPayment_Detail md2 " +
+                    "                   JOIN CollectorResident_Payment crp2 ON md2.CRPaymentId = crp2.CRPaymentId " +
+                    "                   JOIN Schedule s2 ON crp2.ScheduleId = s2.ScheduleId " +
+                    "                   JOIN Resident r2 ON s2.ResidentId = r2.ResidentId " +
+                    "                   WHERE crp2.PaymentStatus = 2 " +
+                    "                   GROUP BY r2.ResidentId " +
+                    "               ) AS RankedSubquery " +
+                    "           ) " +
+                    "       ) AS Ranking " +
+                    "FROM CRPayment_Detail md " +
+                    "JOIN CollectorResident_Payment crp ON md.CRPaymentId = crp.CRPaymentId " +
+                    "JOIN Schedule s ON crp.ScheduleId = s.ScheduleId " +
+                    "JOIN Resident r ON s.ResidentId = r.ResidentId " +
+                    "WHERE crp.PaymentStatus = 2 AND r.ResidentId = :residentId " +
+                    "GROUP BY r.ResidentId",
+            nativeQuery = true)
+    List<Object[]> findRankingByResidentId(@Param("residentId") int residentId);
 }

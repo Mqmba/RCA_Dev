@@ -38,6 +38,12 @@ public class Schedule extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private scheduleStatus status = scheduleStatus.PENDING;
 
+    @Column(name="CollectorNote", columnDefinition = "TEXT", nullable = true)
+    private String collectorNote;
+
+    @Column(name="ResidentNote", columnDefinition = "TEXT", nullable = true)
+    private String residentNote;
+
     @ManyToOne
     @JoinColumn(name = "BuildingId", referencedColumnName = "buildingId")
     private Building building;

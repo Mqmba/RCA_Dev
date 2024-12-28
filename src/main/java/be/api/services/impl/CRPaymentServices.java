@@ -83,7 +83,7 @@ public class CRPaymentServices implements ICRPaymentServices {
     public Boolean updateSuccessCRPayment(Integer paymentId) {
         try{
             CollectorResidentPayment existingPayment = crPaymentRepository.findById(paymentId)
-                    .orElseThrow(() -> new IllegalArgumentException("Payment not found with ID: " + paymentId));
+                    .orElseThrow(() -> new BadRequestException("Payment not found with ID: " + paymentId));
             existingPayment.setStatus(2);
             Schedule schedule = existingPayment.getSchedule();
             schedule.setStatus(Schedule.scheduleStatus.SUCCESS);
@@ -102,7 +102,7 @@ public class CRPaymentServices implements ICRPaymentServices {
         }
         catch (Exception e){
             log.error("Error while updating CRPayment: {}", e.getMessage());
-            return false;
+            throw new BadRequestException(e.getMessage());
         }
     }
 

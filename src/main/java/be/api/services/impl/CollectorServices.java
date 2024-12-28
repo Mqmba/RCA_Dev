@@ -22,7 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,13 +69,28 @@ public class CollectorServices implements ICollectorServices {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
 
-        List<Schedule> schedule = scheduleService.getUserSchedules(user.getUserId());
-        if (schedule.size() >= 3) {
-            throw new ResourceNotFoundException("Schedule exceeds limit of 3");
-        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfCurrentHour = now.withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfCurrentHour = startOfCurrentHour.plusHours(1);
 
+        // Chuyển đổi LocalDateTime sang Date để so sánh
+        Date startDate = java.sql.Timestamp.valueOf(startOfCurrentHour);
+        Date endDate = java.sql.Timestamp.valueOf(endOfCurrentHour);
+
+        // Lấy danh sách lịch của user trong khoảng thời gian hiện tại
+        List<Schedule> schedulesInCurrentHour = scheduleService.getUserSchedules(user.getUserId())
+                .stream()
+                .filter(schedule ->
+                        schedule.getUpdatedAt().compareTo(startDate) >= 0 &&
+                                schedule.getUpdatedAt().compareTo(endDate) < 0
+                )
+                .collect(Collectors.toList());
+
+        if (schedulesInCurrentHour.size() >= 2) {
+            throw new BadRequestException("Bạn chỉ được nhận tối đa 2 lịch mỗi giờ!");
+        }
         Schedule existingSchedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new BadRequestException("Không tìm thấy lịch"));
 
         existingSchedule.setStatus(Schedule.scheduleStatus.ACCEPTED);
         existingSchedule.setCollector(user.getCollector());

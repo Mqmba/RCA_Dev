@@ -21,8 +21,15 @@ import org.springframework.web.bind.annotation.*;
 public class ResidentController {
 
     private final ResidentServices residentService;
-    private static final Logger logger = LoggerFactory.getLogger(ResidentController.class);
 
 
 
+    @PostMapping("/analyze-material")
+    public ResponseData<?> analyzeMaterial() {
+        try {
+            return new ResponseData<>(200, "Thành công", residentService.analyzeMaterialByResidentId());
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
 }

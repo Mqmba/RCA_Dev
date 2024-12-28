@@ -1,7 +1,10 @@
 package be.api.services.impl;
 
+import be.api.dto.request.CancelScheduleRequestDTO;
 import be.api.dto.request.ScheduleDTO;
 import be.api.dto.response.ScheduleResponseDTO;
+import be.api.exception.BadRequestException;
+import be.api.exception.ResourceNotFoundException;
 import be.api.model.*;
 import be.api.repository.*;
 import be.api.services.IScheduleService;
@@ -12,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,6 +47,22 @@ public class ScheduleService implements IScheduleService {
     @Override
     public Schedule createSchedule(ScheduleDTO scheduleDTO, int userId) {
      try{
+         User user = userRepository.findById(userId)
+                 .orElseThrow(() -> new BadRequestException("Không tìm thấy user:" + userId));
+         if(user.getRole() != User.UserRole.ROLE_RESIDENT){
+             throw new BadRequestException("Chỉ cư dân mới có thể tạo lịch");
+         }
+
+         Schedule existingSchedule = scheduleRepository.findByResidentId(user.getResident().getResidentId())
+                 .stream()
+                 .filter(schedule -> schedule.getStatus() == Schedule.scheduleStatus.PENDING)
+                 .findFirst()
+                 .orElse(null);
+
+         if(existingSchedule != null){
+                throw new BadRequestException("Bạn đã có lịch đang chờ xác nhận");
+         }
+
          Schedule model = new Schedule();
          model.setMaterialType(scheduleDTO.getMaterialType());
          model.setScheduleDate(scheduleDTO.getScheduleDate());
@@ -51,22 +71,20 @@ public class ScheduleService implements IScheduleService {
          Optional<Integer> buildingId = residentRepository.findBuildingIdByUserId(userId);
          if (buildingId.isPresent()) {
              Building building = buildingRepository.findById(buildingId.get())
-                     .orElseThrow(() -> new EntityNotFoundException("Building not found with ID: " + buildingId.get()));
+                     .orElseThrow(() -> new BadRequestException("Building not found with ID: " + buildingId.get()));
              model.setBuilding(building);
 
          }
          model.setMaterialType(scheduleDTO.getMaterialType());
 
          Resident resident = residentRepository.findByUser_UserId(userId)
-                 .orElseThrow(() -> new EntityNotFoundException("Resident not found with ID: " + userId));
+                 .orElseThrow(() -> new BadRequestException("Resident not found with ID: " + userId));
          model.setResidentId(resident);
-
 
          return scheduleRepository.save(model);
      }
      catch (Exception e){
-            log.error("Error creating schedule", e);
-            throw e;
+            throw new BadRequestException(e.getMessage());
      }
     }
 
@@ -115,12 +133,10 @@ public class ScheduleService implements IScheduleService {
 
     @Override
     public List<Schedule> getUserSchedules(Integer userId) {
-        // Find the user associated with the userId and retrieve its collector
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        Collector collector = user.getCollector(); // Assuming User has a `Collector` association
+                .orElseThrow(() -> new BadRequestException("User not found with id: " + userId));
+        Collector collector = user.getCollector();
 
-        // Fetch schedules for default statuses
         return scheduleRepository.findByCollectorAndStatusIn(collector,
                 List.of(Schedule.scheduleStatus.ACCEPTED));
     }
@@ -133,6 +149,31 @@ public class ScheduleService implements IScheduleService {
         Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + id));
         return schedule;
+    }
+
+    @Override
+    public Boolean cancelScheduleById(CancelScheduleRequestDTO dto) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        Schedule schedule = scheduleRepository.findById(dto.getScheduleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lịch" + dto.getScheduleId()));
+        if (schedule.getCollector() != null &&  schedule.getCollector().getUser().getUsername().equals(userName)) {
+            // nếu là collector thì remove collector đó ra khỏi schedule và set status lại là pending
+            schedule.setCollector(null);
+            schedule.setStatus(Schedule.scheduleStatus.PENDING);
+            schedule.setCollectorNote(dto.getReason());
+            scheduleRepository.save(schedule);
+            return true;
+        }
+        else if (schedule.getResidentId().getUser().getUsername().equals(userName)) {
+            schedule.setStatus(Schedule.scheduleStatus.CANCELED);
+            schedule.setResidentNote(dto.getReason());
+            scheduleRepository.save(schedule);
+            return true;
+        }
+        else{
+            throw new BadRequestException("Ban không có quyền hủy lịch này");
+        }
     }
 
     @Override
