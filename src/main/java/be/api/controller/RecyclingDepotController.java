@@ -63,7 +63,7 @@ public class RecyclingDepotController {
             return new ResponseData<>(200, "Recycling depot payment updated successfully", cdPaymentServices.updateSuccessCDPayment(id));
         }
         catch (Exception e){
-            return new ResponseData<>(500, "Internal server error while updating recycling depot payment with message: " + e.getMessage(), null);
+            return new ResponseData<>(500, e.getMessage(), null);
         }
     }
 
@@ -103,7 +103,7 @@ public class RecyclingDepotController {
             return new ResponseData<>(200, "Recycling depot found", recyclingDepotService.getRecyclingDepotById(id));
         }
         catch (Exception e){
-            return new ResponseData<>(500, "Internal server error while retrieving recycling depot with message: " + e.getMessage(), null);
+            return new ResponseData<>(500, e.getMessage(), null);
         }
     }
 

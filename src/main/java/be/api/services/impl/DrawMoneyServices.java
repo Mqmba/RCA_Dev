@@ -4,8 +4,7 @@ import be.api.dto.request.DrawMoneyRequestDTO;
 import be.api.exception.BadRequestException;
 import be.api.model.DrawMoneyHistory;
 import be.api.model.User;
-import be.api.repository.IDrawMoneyHistoryRepository;
-import be.api.repository.IUserRepository;
+import be.api.repository.*;
 import be.api.services.IDrawMoneyServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +22,51 @@ public class DrawMoneyServices implements IDrawMoneyServices {
 
     private final IDrawMoneyHistoryRepository drawMoneyHistoryRepository;
     private final IUserRepository userRepository;
+    private final IResidentRepository residentRepository;
+    private final ICollectorRepository collectorRepository;
+    private final IRecyclingDepotRepository recyclingDepotRepository;
+
 
     @Override
     public DrawMoneyHistory createDrawMoneyRequest(DrawMoneyRequestDTO dto) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
+
+        if(user == null){
+            throw new BadRequestException("Không tìm thấy user");
+        }
+
+        if(user.getRole() == User.UserRole.ROLE_COLLECTOR){
+            if(user.getCollector().getNumberPoint() <= dto.getNumberPoint()){
+                throw new BadRequestException("Số điểm không đủ");
+            }
+            else{
+                user.getCollector().setNumberPoint(user.getCollector().getNumberPoint() - dto.getNumberPoint());
+                collectorRepository.save(user.getCollector());
+            }
+        }
+        else if(user.getRole() == User.UserRole.ROLE_RESIDENT){
+            if(user.getResident().getRewardPoints() <= dto.getNumberPoint()){
+                throw new BadRequestException("Số điểm không đủ");
+            }
+            else{
+                user.getResident().setRewardPoints(user.getResident().getRewardPoints() - dto.getNumberPoint());
+                residentRepository.save(user.getResident());
+            }
+        }
+        else if(user.getRole() == User.UserRole.ROLE_RECYCLING_DEPOT){
+            if(user.getRecyclingDepot().getBalance() <= dto.getNumberPoint()){
+                throw new BadRequestException("Số điểm không đủ");
+            }
+            else{
+                user.getRecyclingDepot().setBalance(user.getRecyclingDepot().getBalance() - dto.getNumberPoint());
+                recyclingDepotRepository.save(user.getRecyclingDepot());
+            }
+        }
+
         DrawMoneyHistory drawMoneyHistory = new DrawMoneyHistory();
+
+
         drawMoneyHistory.setNumberPoint(dto.getNumberPoint());
         drawMoneyHistory.setOrderCode(generateOrderCode());
         drawMoneyHistory.setAmount(dto.getNumberPoint() * 1000);
@@ -57,6 +95,11 @@ public class DrawMoneyServices implements IDrawMoneyServices {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
         return drawMoneyHistoryRepository.findByUser_UserId(user.getUserId());
+    }
+
+    @Override
+    public List<DrawMoneyHistory> getAllDrawMoney() {
+        return drawMoneyHistoryRepository.findAll();
     }
 
 

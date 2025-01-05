@@ -1,6 +1,7 @@
 package be.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,6 +45,8 @@ public class Schedule extends AbstractEntity {
     @Column(name="ResidentNote", columnDefinition = "TEXT", nullable = true)
     private String residentNote;
 
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "BuildingId", referencedColumnName = "buildingId")
     private Building building;
