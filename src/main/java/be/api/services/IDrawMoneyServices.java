@@ -9,6 +9,7 @@ public interface IDrawMoneyServices {
     DrawMoneyHistory createDrawMoneyRequest(DrawMoneyRequestDTO dto);
     DrawMoneyHistory setStatusDrawMoneyRequest(int drawMoneyId, DrawMoneyHistory.STATUS status);
     List<DrawMoneyHistory> getListDrawMoneyRequestByUser();
+    List<DrawMoneyHistory> getAllDrawMoney();
 
 }
 

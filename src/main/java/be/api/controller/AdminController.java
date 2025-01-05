@@ -2,6 +2,7 @@ package be.api.controller;
 
 import be.api.dto.request.UserRequestDTO;
 import be.api.dto.response.AdminDashboardResponseDTO;
+import be.api.dto.response.AdminTransactionResponseDTO;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
 import be.api.exception.ResourceNotFoundException;
@@ -66,7 +67,8 @@ public class AdminController {
     @GetMapping("/get-admin-transactions")
     public ResponseData<?> getTransactions() {
         try {
-            return new ResponseData<>(HttpStatus.OK.value(), "List transactions found", adminServices.getAdminTransaction());
+            AdminTransactionResponseDTO adminTransactionResponseDTO = adminServices.getAdminTransaction();
+            return new ResponseData<>(HttpStatus.OK.value(), "List transactions found", adminTransactionResponseDTO);
         } catch (ResourceNotFoundException e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }

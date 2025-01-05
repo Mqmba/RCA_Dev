@@ -2,6 +2,7 @@ package be.api.services.impl;
 
 import be.api.dto.request.CreateDepotRequestDTO;
 import be.api.dto.response.RecyclingDepotResponse;
+import be.api.exception.BadRequestException;
 import be.api.model.DepotMaterial;
 import be.api.model.Material;
 import be.api.model.RecyclingDepot;
@@ -99,7 +100,7 @@ public class RecyclingDepotService implements IRecyclingDepotService {
     @Override
     public RecyclingDepotResponse getRecyclingDepotById(int id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new BadRequestException("User not found with id: " + id));
         RecyclingDepot depot =  user.getRecyclingDepot();
         RecyclingDepotResponse res = modelMapper.map(depot, RecyclingDepotResponse.class);
         List<DepotMaterial> depotMaterials = depotMaterialRepository.findByRecyclingDepotId(depot.getId());

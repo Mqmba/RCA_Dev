@@ -24,7 +24,7 @@ public class DrawMoneyController {
         try{
             return new ResponseData<>(HttpStatus.CREATED.value(), "Tạo thành công", drawMoneyServices.createDrawMoneyRequest(dto));
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -35,7 +35,7 @@ public class DrawMoneyController {
             drawMoneyServices.setStatusDrawMoneyRequest(id, status);
             return new ResponseData<>(HttpStatus.OK.value(), "Cập nhật thành công", null);
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -45,8 +45,19 @@ public class DrawMoneyController {
         try{
             return new ResponseData<>(HttpStatus.OK.value(), "Thành công", drawMoneyServices.getListDrawMoneyRequestByUser());
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
+
+    @GetMapping("/get-all-draw-money")
+    public ResponseData<?> getAllDrawMoney() {
+        try{
+            return new ResponseData<>(HttpStatus.OK.value(), "Thành công", drawMoneyServices.getAllDrawMoney());
+        }
+        catch (Exception e){
+            return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
+        }
+    }
+
 }
