@@ -1,6 +1,7 @@
 package be.api.services.impl;
 
 import be.api.dto.request.CreatePostDTO;
+import be.api.dto.request.UpdatePostDTO;
 import be.api.exception.BadRequestException;
 import be.api.model.Post;
 import be.api.model.User;
@@ -32,6 +33,7 @@ public class PostServices implements IPostServices {
         Post post = new Post();
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
+        post.setImage(dto.getImage());
         post.setStatus(1);
         post.setUser(admin);
         postRepository.save(post);
@@ -56,5 +58,17 @@ public class PostServices implements IPostServices {
     @Override
     public Post getPostById(int id) {
         return postRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public boolean updatePost(UpdatePostDTO dto) {
+        Post post = postRepository.findById(dto.getId()).orElse(null);
+        if (post == null) {
+            throw new BadRequestException("Không tìm thấy bài viết");
+        }
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+        postRepository.save(post);
+        return true;
     }
 }

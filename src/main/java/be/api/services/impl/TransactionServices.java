@@ -1,5 +1,7 @@
 package be.api.services.impl;
 
+import be.api.dto.response.TransactionHistoryResponseDTO;
+import be.api.dto.response.TransactionResponseDTO;
 import be.api.exception.BadRequestException;
 import be.api.model.*;
 import be.api.repository.*;
@@ -12,8 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -50,15 +54,69 @@ public class TransactionServices implements ITransactionServices {
     }
 
     @Override
-    public List<TransactionHistory> getListTransactionHistoryByUserId(int userId) {
-        return transactionHistory.findByUser_UserId(userId);
+    public List<TransactionHistoryResponseDTO> getListTransactionHistoryByUserId(int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng"));
+
+        List<TransactionHistory> transactionSends = transactionHistory.findByUser_UserId(user.getUserId());
+        List<TransactionHistory> transactionReceives = transactionHistory.findByReceiverId(user);
+
+        List<TransactionHistoryResponseDTO> responseSends = transactionSends.stream()
+                .map(transaction -> {
+                    TransactionHistoryResponseDTO dto = new TransactionHistoryResponseDTO();
+                    dto.setTransactionHistory(transaction);
+                    dto.setType("send");
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        List<TransactionHistoryResponseDTO> responseReceives = transactionReceives.stream()
+                .map(transaction -> {
+                    TransactionHistoryResponseDTO dto = new TransactionHistoryResponseDTO();
+                    dto.setTransactionHistory(transaction);
+                    dto.setType("receive");
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        List<TransactionHistoryResponseDTO> allTransactions = new ArrayList<>();
+        allTransactions.addAll(responseSends);
+        allTransactions.addAll(responseReceives);
+
+        return allTransactions;
     }
 
     @Override
-    public List<TransactionHistory> getListTransactionHistoryByToken() {
+    public List<TransactionHistoryResponseDTO> getListTransactionHistoryByToken() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(userName);
-        return transactionHistory.findByUser_UserId(user.getUserId());
+
+        List<TransactionHistory> transactionSends = transactionHistory.findByUser_UserId(user.getUserId());
+        List<TransactionHistory> transactionReceives = transactionHistory.findByReceiverId(user);
+
+        List<TransactionHistoryResponseDTO> responseSends = transactionSends.stream()
+                .map(transaction -> {
+                    TransactionHistoryResponseDTO dto = new TransactionHistoryResponseDTO();
+                    dto.setTransactionHistory(transaction);
+                    dto.setType("send");
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        List<TransactionHistoryResponseDTO> responseReceives = transactionReceives.stream()
+                .map(transaction -> {
+                    TransactionHistoryResponseDTO dto = new TransactionHistoryResponseDTO();
+                    dto.setTransactionHistory(transaction);
+                    dto.setType("receive");
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        List<TransactionHistoryResponseDTO> allTransactions = new ArrayList<>();
+        allTransactions.addAll(responseSends);
+        allTransactions.addAll(responseReceives);
+
+        return allTransactions;
     }
 
     private void handleCollectorTransfer(User sender, int receiverId, double numberPoint) {
