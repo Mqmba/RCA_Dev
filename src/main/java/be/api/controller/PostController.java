@@ -1,6 +1,7 @@
 package be.api.controller;
 
 import be.api.dto.request.CreatePostDTO;
+import be.api.dto.request.UpdatePostDTO;
 import be.api.dto.response.ResponseData;
 import be.api.dto.response.ResponseError;
 import be.api.services.impl.PostServices;
@@ -19,6 +20,15 @@ public class PostController {
     public ResponseData<?> createPost(@RequestBody CreatePostDTO dto) {
         try {
             return new ResponseData<>(200, "Thành công", postServices.createPost(dto));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+    @PostMapping("/update-post")
+    public ResponseData<?> updatePost(@RequestBody UpdatePostDTO dto) {
+        try {
+            return new ResponseData<>(200, "Thành công", postServices.updatePost(dto));
         } catch (Exception e) {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }

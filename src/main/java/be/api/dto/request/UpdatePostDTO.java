@@ -1,14 +1,12 @@
 package be.api.dto.request;
 
-
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class CreatePostDTO implements Serializable {
+public class UpdatePostDTO implements Serializable {
+    int id;
     String title;
     String content;
-    String image;
 }
-

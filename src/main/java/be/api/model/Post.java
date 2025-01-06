@@ -22,6 +22,9 @@ public class Post extends AbstractEntity {
     @Column(name="Content", columnDefinition = "TEXT")
     private String content;
 
+    @Column(name="Image", columnDefinition = "TEXT")
+    private String image;
+
 
     @ManyToOne
     @JoinColumn(name = "UserId",  referencedColumnName = "UserId")
