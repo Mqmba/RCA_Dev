@@ -94,8 +94,8 @@ public class CRPaymentServices implements ICRPaymentServices {
                 throw new BadRequestException("Không tìm thấy thông tin người dùng");
             }
 
-            if(existingPayment.getSchedule().getCollector().getUser().getUserId() != user.getUserId()){
-                throw new BadRequestException("Chỉ có người thu gom của đơn này mới được xác nhận");
+            if(existingPayment.getSchedule().getResidentId().getUser().getUserId() != user.getUserId()){
+                throw new BadRequestException("Chỉ có cư dân của đơn này mới được xác nhận");
             }
 
             if(existingPayment.getStatus() == 2){
