@@ -8,6 +8,7 @@ import be.api.repository.*;
 import be.api.services.ICRPaymentServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class CRPaymentServices implements ICRPaymentServices {
     private final ICollectorRepository collectorRepository;
     private final IResidentRepository residentRepository;
     private final IMaterialRepository materialRepository;
+    private final IUserRepository userRepository;
 
     @Override
     public Integer createCRPayment(CRPaymentRequestDTO dto) {
@@ -83,7 +85,23 @@ public class CRPaymentServices implements ICRPaymentServices {
     public Boolean updateSuccessCRPayment(Integer paymentId) {
         try{
             CollectorResidentPayment existingPayment = crPaymentRepository.findById(paymentId)
-                    .orElseThrow(() -> new BadRequestException("Payment not found with ID: " + paymentId));
+                    .orElseThrow(() -> new BadRequestException("Thông tin thanh toán không  tìm thấy: " + paymentId));
+
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findByUsername(userName);
+
+            if(user == null){
+                throw new BadRequestException("Không tìm thấy thông tin người dùng");
+            }
+
+            if(existingPayment.getSchedule().getCollector().getUser().getUserId() != user.getUserId()){
+                throw new BadRequestException("Chỉ có người thu gom của đơn này mới được xác nhận");
+            }
+
+            if(existingPayment.getStatus() == 2){
+                throw new BadRequestException("Đơn này đã xác nhận thanh toán thành công");
+            }
+
             existingPayment.setStatus(2);
             Schedule schedule = existingPayment.getSchedule();
             schedule.setStatus(Schedule.scheduleStatus.SUCCESS);
