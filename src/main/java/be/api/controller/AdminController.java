@@ -23,7 +23,7 @@ public class AdminController {
         try {
             AdminDashboardResponseDTO adminDashboardResponseDTO = adminServices.getAdminDashBoard();
             return new ResponseData<>(HttpStatus.OK.value(), "Admin dashboard found", adminDashboardResponseDTO);
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -32,7 +32,7 @@ public class AdminController {
     public ResponseData<?> getAllUser() {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "List user found", adminServices.getAllUser());
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -41,7 +41,7 @@ public class AdminController {
     public ResponseData<?> getAllDepot() {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "List depot found", adminServices.getAllDepot());
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -50,7 +50,7 @@ public class AdminController {
     public ResponseData<?> getCollector() {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "List collector found", adminServices.getAllCollector());
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -59,7 +59,7 @@ public class AdminController {
     public ResponseData<?> getActivityUser() {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "List activity user found", adminServices.getAdminActivity());
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -69,7 +69,7 @@ public class AdminController {
         try {
             AdminTransactionResponseDTO adminTransactionResponseDTO = adminServices.getAdminTransaction();
             return new ResponseData<>(HttpStatus.OK.value(), "List transactions found", adminTransactionResponseDTO);
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }

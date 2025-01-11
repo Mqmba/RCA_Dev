@@ -25,7 +25,7 @@ public class DepotMaterialController {
         try{
             return new ResponseData<>(HttpStatus.CREATED.value(), "Tạo thành công", depotMaterialService.createDepotMaterial(dto));
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }

@@ -92,7 +92,7 @@ public class ScheduleController {
                 throw new BadRequestException("Authorization header is missing or invalid");
             }
 
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
            throw new BadRequestException(e.getMessage());
         }
     }
@@ -130,7 +130,7 @@ public class ScheduleController {
                     "Lấy danh sách thành công",
                     schedules);
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             throw new BadRequestException(e.getMessage());
         }
     }
@@ -140,7 +140,7 @@ public class ScheduleController {
         try {
             Schedule schedule = scheduleService.getScheduleById(id);
             return new ResponseData<>(HttpStatus.OK.value(), "Get schedule successful", schedule);
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             throw new BadRequestException(e.getMessage());
         }
     }

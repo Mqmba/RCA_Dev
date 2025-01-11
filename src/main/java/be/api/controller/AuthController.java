@@ -87,7 +87,7 @@ public class AuthController {
         try {
             logger.info("Attempting to register user: {}", request.getUsername());
             return new ResponseData<>(HttpStatus.CREATED.value(), "Đăng ký resident thành công", authService.registerResident(request));
-        } catch (ResourceConflictException e) {
+        } catch (Exception e) {
             logger.error("Registration error: {}", e.getMessage());
             return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
         }
@@ -98,7 +98,7 @@ public class AuthController {
         try {
             logger.info("Attempting to register user: {}", request.getUsername());
             return new ResponseData<>(HttpStatus.CREATED.value(), "Đăng kí collector thành công", authService.registerCollector(request));
-        } catch (ResourceConflictException e) {
+        } catch (Exception e) {
             logger.error("Registration error: {}", e.getMessage());
             return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
         }

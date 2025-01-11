@@ -33,7 +33,7 @@ public class UserController {
             int id = userServices.saveUser(userDTO);
             return new ResponseData<>(HttpStatus.CREATED.value(), "User added successfully", id);
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -44,7 +44,7 @@ public class UserController {
             UserRequestDTO user = userServices.getUserById(id);
             return new ResponseData<>(HttpStatus.OK.value(), "User found", user);
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -54,7 +54,7 @@ public class UserController {
         try{
             userServices.updateUser(id, userDTO);
             return new ResponseData<>(HttpStatus.OK.value(), "User updated successfully", null);
-        }catch (ResourceNotFoundException e){
+        }catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -63,7 +63,7 @@ public class UserController {
     public ResponseData<?> getListUserByPaging(@RequestParam int pageNo, @RequestParam int pageSize) {
         try {
            return new ResponseData<>(HttpStatus.OK.value(), "List user found", userServices.getListUserByPaging(pageNo, pageSize));
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -73,7 +73,7 @@ public class UserController {
         try {
             userServices.deleteUser(id);
             return new ResponseData<>(HttpStatus.OK.value(), "User deleted successfully", null);
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -82,7 +82,7 @@ public class UserController {
     public ResponseData<?> searchUsersByName(@RequestParam String name, @RequestParam int pageNo, @RequestParam int pageSize) {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "List user found", userServices.searchUsersByName(name, pageNo, pageSize));
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -91,7 +91,7 @@ public class UserController {
     public ResponseData<User> getUserByEmail(@RequestParam String email) {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "User found", userServices.getUserByEmail(email));
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
@@ -100,7 +100,7 @@ public class UserController {
     public ResponseData<?> getInfoUser() {
         try {
             return new ResponseData<>(HttpStatus.OK.value(), "User found", userServices.getInfoUser());
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }

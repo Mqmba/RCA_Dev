@@ -33,7 +33,7 @@ public class VoucherController {
         try{
             return new ResponseData<>(HttpStatus.CREATED.value(), "Added successfully", voucherServices.createVoucher(dto));
         }
-        catch (ResourceNotFoundException e){
+        catch (Exception e){
             return new ResponseError(HttpStatus.NOT_FOUND.value(), e.getMessage());
         }
     }
