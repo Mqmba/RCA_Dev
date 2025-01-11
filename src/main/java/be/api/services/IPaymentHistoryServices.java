@@ -12,5 +12,5 @@ public interface IPaymentHistoryServices {
     List<Payment_History> getPaymentHistoryByUser();
     Boolean updateSuccessPaymentCollector(String orderCode);
     Boolean changePointFromDepotToCollector(Long point, int collectorId);
-
+    List<Payment_History> getListPaymentHistoryByPaging();
 }

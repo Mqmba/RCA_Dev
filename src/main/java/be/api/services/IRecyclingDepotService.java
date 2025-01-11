@@ -20,4 +20,6 @@ public interface IRecyclingDepotService {
     RecyclingDepotResponse getRecyclingDepotById(int id);
 
     List<Material> checkIsMissingMaterial();
+
+
 }

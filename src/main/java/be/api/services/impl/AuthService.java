@@ -141,6 +141,24 @@ public class AuthService {
         }
     }
 
+    public Boolean changePassword(ChangePasswordRequestDTO dto) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new BadRequestException("Không tìm thấy người dùng");
+        }
+
+        if (!bCryptPasswordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            throw new BadRequestException("Mật khẩu cũ không đúng");
+        }
+
+        user.setPassword(bCryptPasswordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+
+
+        return true;
+    }
+
 
     public User registerResident(ResidentRegisterRequestDTO dto) {
         validateUserDetails(dto.getEmail(), dto.getUsername(), dto.getPhoneNumber());
@@ -168,7 +186,6 @@ public class AuthService {
     }
 
     public User registerDepot (RegisterDepotRequestDTO dto){
-     try{
          validateUserDetails(dto.getEmail(), dto.getUsername(), dto.getPhoneNumber());
          User user  = User.builder()
                  .username(dto.getUsername())
@@ -194,9 +211,7 @@ public class AuthService {
          recyclingDepot.setBalance(0.0);
          recyclingDepotRepository.save(recyclingDepot);
          return user;
-     } catch (Exception e) {
-         throw new RuntimeException(e);
-     }
+
     }
 
 
@@ -229,29 +244,29 @@ public class AuthService {
 
         Apartment apartment = apartmentRepository.findByResidentCodeAndPhoneNumber(residentCode, phoneNumber);
         if (apartment == null) {
-            throw new ResourceConflictException("Mã cư dân hoặc số điện thoại không đúng");
+            throw new BadRequestException("Mã cư dân hoặc số điện thoại không đúng");
         }
 
         if (!isValidPhoneNumber(phoneNumber)) {
-            throw new ResourceConflictException("Số điện thoại không hợp lệ");
+            throw new BadRequestException("Số điện thoại không hợp lệ");
         }
 
         if (residentCode != null && !isValidResidentCode(residentCode)) {
-            throw new ResourceConflictException("Mã cư dân không hợp lệ");
+            throw new BadRequestException("Mã cư dân không hợp lệ");
         }
     }
 
     private void validateUserDetails(String email, String username, String phoneNumber) {
         if (userRepository.findByEmail(email) != null) {
-            throw new ResourceConflictException("Email đã được đăng kí");
+            throw new BadRequestException("Email đã được đăng kí");
         }
 
         if (userRepository.findByUsername(username) != null) {
-            throw new ResourceConflictException("Số điện thoại đã được đăng kí");
+            throw new BadRequestException("Số điện thoại đã được đăng kí");
         }
 
         if (userRepository.findByPhoneNumber(phoneNumber) != null) {
-            throw new ResourceConflictException("Số điện thoại đã được đăng kí");
+            throw new BadRequestException("Số điện thoại đã được đăng kí");
         }
     }
 

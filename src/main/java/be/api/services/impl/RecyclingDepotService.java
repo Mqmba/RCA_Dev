@@ -1,6 +1,7 @@
 package be.api.services.impl;
 
 import be.api.dto.request.CreateDepotRequestDTO;
+import be.api.dto.response.AnalyzeMaterialDepot;
 import be.api.dto.response.RecyclingDepotResponse;
 import be.api.exception.BadRequestException;
 import be.api.model.DepotMaterial;
@@ -141,6 +142,34 @@ public class RecyclingDepotService implements IRecyclingDepotService {
         }
         return missingMaterials;
     }
+    public AnalyzeMaterialDepot convertToAnalyzeMaterial(List<Object[]> rawData) {
+        AnalyzeMaterialDepot analyzeMaterial = new AnalyzeMaterialDepot();
 
+        List<AnalyzeMaterialDepot.AnalyzeItem> dataAnalyze = new ArrayList<>();
+
+        for (Object[] row : rawData) {
+            String materialName = (String) row[0];
+            double totalWeight  = 0;
+
+            if (row[1] != null) {
+                totalWeight = ((Number) row[1]).doubleValue();
+            }
+
+            AnalyzeMaterialDepot.AnalyzeItem item = new AnalyzeMaterialDepot.AnalyzeItem(materialName, totalWeight);
+            dataAnalyze.add(item);
+        }
+
+        analyzeMaterial.setDataAnalyze(dataAnalyze);
+
+        return analyzeMaterial;
+    }
+
+    public AnalyzeMaterialDepot analysisMaterial() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        RecyclingDepot depot = user.getRecyclingDepot();
+        List<Object[]> rawData =  recyclingDepotRepository.findAnalyzMaterialByDepotId(depot.getId());
+        return convertToAnalyzeMaterial(rawData);
+    }
 
 }

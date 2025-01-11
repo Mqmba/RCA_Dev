@@ -86,7 +86,7 @@ public class AuthController {
     public ResponseData<?> register(@RequestBody ResidentRegisterRequestDTO request) {
         try {
             logger.info("Attempting to register user: {}", request.getUsername());
-            return new ResponseData<>(HttpStatus.CREATED.value(), "User registered successfully", authService.registerResident(request));
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Đăng ký resident thành công", authService.registerResident(request));
         } catch (ResourceConflictException e) {
             logger.error("Registration error: {}", e.getMessage());
             return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
@@ -97,7 +97,7 @@ public class AuthController {
     public ResponseData<?> registerCollector(@RequestBody ResidentRegisterRequestDTO request) {
         try {
             logger.info("Attempting to register user: {}", request.getUsername());
-            return new ResponseData<>(HttpStatus.CREATED.value(), "User registered successfully", authService.registerCollector(request));
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Đăng kí collector thành công", authService.registerCollector(request));
         } catch (ResourceConflictException e) {
             logger.error("Registration error: {}", e.getMessage());
             return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
@@ -108,10 +108,19 @@ public class AuthController {
     public ResponseData<?> registerCollector(@RequestBody RegisterDepotRequestDTO request) {
         try {
             logger.info("Attempting to register user: {}", request.getUsername());
-            return new ResponseData<>(HttpStatus.CREATED.value(), "User registered successfully", authService.registerDepot(request));
-        } catch (ResourceConflictException e) {
-            logger.error("Registration error: {}", e.getMessage());
-            return new ResponseError(HttpStatus.CONFLICT.value(), e.getMessage());
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Đăng ký depot  thành công", authService.registerDepot(request));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
+    @PostMapping("/change-password-by-user")
+    public ResponseData<?> changePasswordByUser(@RequestBody ChangePasswordRequestDTO request) {
+        try {
+            logger.info("Attempting to change password");
+            return new ResponseData<>(HttpStatus.OK.value(), "Thay đổi mật khẩu thành công", authService.changePassword(request));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
 

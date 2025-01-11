@@ -12,6 +12,8 @@ import be.api.repository.IUserRepository;
 import be.api.services.IPaymentHistoryServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -90,6 +92,12 @@ public class PaymentHistoryServices implements IPaymentHistoryServices
         collector.setNumberPoint(collector.getNumberPoint() + point);
         collectorRepository.save(collector);
         return true;
+    }
+
+    @Override
+    public List<Payment_History> getListPaymentHistoryByPaging() {
+        return paymentHistoryRepository.findAll();
+
     }
 
 

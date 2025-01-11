@@ -102,6 +102,16 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/get-list-payment-history")
+    public ResponseData<?> getListPaymentByCollector() {
+        try {
+            List<Payment_History> list = paymentHistoryServices.getListPaymentHistoryByPaging();
+            return new ResponseData<>(HttpStatus.OK.value(), "Lấy danh sách thành công", list);
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
 
     @GetMapping("/change-point-from-depot-to-collector")
     public ResponseData<?> changePointFromDepotToCollector(@RequestParam long numberPoint, @RequestParam int collectorId) {

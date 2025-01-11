@@ -85,7 +85,7 @@ public class CRPaymentServices implements ICRPaymentServices {
     public Boolean updateSuccessCRPayment(Integer paymentId) {
         try{
             CollectorResidentPayment existingPayment = crPaymentRepository.findById(paymentId)
-                    .orElseThrow(() -> new BadRequestException("Thông tin thanh toán không  tìm thấy: " + paymentId));
+                    .orElseThrow(() -> new BadRequestException("Thông tin thanh toán không tìm thấy: " + paymentId));
 
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
             User user = userRepository.findByUsername(userName);

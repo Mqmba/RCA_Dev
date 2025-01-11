@@ -16,4 +16,5 @@ public interface IUserServices {
     List<UserRequestDTO> searchUsersByName(String name, int pageNo, int pageSize);
     User getUserByEmail(String email);
     User getInfoUser();
+
 }

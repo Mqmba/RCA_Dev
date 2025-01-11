@@ -117,5 +117,15 @@ public class RecyclingDepotController {
         }
     }
 
+    @GetMapping("/get-analytic-material-depot")
+    public ResponseData<?> getAnalyticMaterialDepot() {
+        try{
+            return new ResponseData<>(200, "List recycling depot found", recyclingDepotService.analysisMaterial()  );
+        }
+        catch (Exception e){
+            return new ResponseData<>(500, "Internal server error while retrieving list recycling depot with message: " + e.getMessage(), null);
+        }
+    }
+
 
 }
