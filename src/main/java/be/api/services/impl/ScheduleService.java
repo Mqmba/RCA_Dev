@@ -55,12 +55,14 @@ public class ScheduleService implements IScheduleService {
 
          Schedule existingSchedule = scheduleRepository.findByResidentId(user.getResident().getResidentId())
                  .stream()
-                 .filter(schedule -> schedule.getStatus() == Schedule.scheduleStatus.PENDING)
+                 .filter(schedule -> schedule.getStatus() == Schedule.scheduleStatus.PENDING
+                            || schedule.getStatus() == Schedule.scheduleStatus.ACCEPTED
+                 )
                  .findFirst()
                  .orElse(null);
 
          if(existingSchedule != null){
-                throw new BadRequestException("Bạn đã có lịch đang chờ xác nhận");
+                throw new BadRequestException("Bạn đang có đơn chưa hoàn  thành");
          }
 
          Schedule model = new Schedule();

@@ -159,6 +159,20 @@ public class AuthService {
         return true;
     }
 
+    public Boolean updateInfo(UpdateUserRequestDTO dto) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new BadRequestException("Không tìm thấy người dùng");
+        }
+
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        userRepository.save(user);
+
+        return true;
+    }
+
 
     public User registerResident(ResidentRegisterRequestDTO dto) {
         validateUserDetails(dto.getEmail(), dto.getUsername(), dto.getPhoneNumber());

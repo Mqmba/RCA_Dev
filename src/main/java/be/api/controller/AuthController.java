@@ -124,6 +124,15 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/update-info-user")
+    public ResponseData<?> updateInfoUser(@RequestBody UpdateUserRequestDTO request) {
+        try {
+            logger.info("Attempting to update user info");
+            return new ResponseData<>(HttpStatus.OK.value(), "Cập nhật thông tin thành công", authService.updateInfo(request));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
 
 
 
